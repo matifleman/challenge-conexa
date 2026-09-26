@@ -115,6 +115,10 @@ Respuesta de un listado:
 }
 ```
 
+## Decisiones de arquitectura
+
+Las decisiones de diseño, con sus alternativas y motivos, están documentadas como ADRs en [`docs/adr`](docs/adr/README.md).
+
 ## Funcionalidades
 
 | Funcionalidad | Estado |
