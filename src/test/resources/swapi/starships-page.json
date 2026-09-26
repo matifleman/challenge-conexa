@@ -1,0 +1,74 @@
+{
+  "message": "ok",
+  "total_records": 36,
+  "total_pages": 18,
+  "previous": null,
+  "next": "https://www.swapi.tech/api/starships?page=2&limit=2&expanded=true",
+  "results": [
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "1 year",
+        "name": "CR90 corvette",
+        "cargo_capacity": "3000000",
+        "passengers": "600",
+        "max_atmosphering_speed": "950",
+        "crew": "30-165",
+        "length": "150",
+        "model": "CR90 corvette",
+        "cost_in_credits": "3500000",
+        "manufacturer": "Corellian Engineering Corporation",
+        "pilots": [],
+        "MGLT": "60",
+        "starship_class": "corvette",
+        "hyperdrive_rating": "2.0",
+        "films": [
+          "https://www.swapi.tech/api/films/1",
+          "https://www.swapi.tech/api/films/3",
+          "https://www.swapi.tech/api/films/6"
+        ],
+        "url": "https://www.swapi.tech/api/starships/2"
+      },
+      "_id": "5f63a34fee9fd7000499be1e",
+      "description": "A Starship",
+      "uid": "2",
+      "__v": 2
+    },
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "2 years",
+        "name": "Star Destroyer",
+        "cargo_capacity": "36000000",
+        "passengers": "n/a",
+        "max_atmosphering_speed": "975",
+        "crew": "47,060",
+        "length": "1,600",
+        "model": "Imperial I-class Star Destroyer",
+        "cost_in_credits": "150000000",
+        "manufacturer": "Kuat Drive Yards",
+        "pilots": [],
+        "MGLT": "60",
+        "starship_class": "Star Destroyer",
+        "hyperdrive_rating": "2.0",
+        "films": [
+          "https://www.swapi.tech/api/films/1",
+          "https://www.swapi.tech/api/films/2",
+          "https://www.swapi.tech/api/films/3"
+        ],
+        "url": "https://www.swapi.tech/api/starships/3"
+      },
+      "_id": "5f63a34fee9fd7000499be1f",
+      "description": "A Starship",
+      "uid": "3",
+      "__v": 2
+    }
+  ],
+  "apiVersion": "1.0",
+  "timestamp": "2026-09-26T14:07:26.900Z",
+  "support": {
+    "contact": "admin@swapi.tech"
+  }
+}
