@@ -104,16 +104,9 @@ Respuesta de un listado:
 - Una página fuera de rango devuelve `content` vacío (no la última página).
 - Un filtro por nombre sin coincidencias devuelve `200` con `content` vacío.
 - `page` o `size` fuera de rango, o un `id` no numérico, devuelven `400`.
-- Un `id` inexistente devuelve `404` con un cuerpo [`ProblemDetail`](https://www.rfc-editor.org/rfc/rfc9457):
+- Un `id` inexistente devuelve `404`.
 
-```json
-{
-  "title": "Not Found",
-  "status": 404,
-  "detail": "Person with id 999 not found",
-  "instance": "/api/v1/people/999"
-}
-```
+El formato de los errores se describe en [Errores](#errores).
 
 ### Films
 
@@ -232,6 +225,46 @@ Respuesta de un vehículo:
 
 Igual que en Starships, los atributos se exponen como texto, tal como los informa SWAPI.
 
+## Errores
+
+Todos los errores se responden con el formato estándar [`ProblemDetail`](https://www.rfc-editor.org/rfc/rfc9457) (`Content-Type: application/problem+json`):
+
+```json
+{
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Person with id 999 not found",
+  "instance": "/api/v1/people/999"
+}
+```
+
+| Código | Cuándo |
+|---|---|
+| `400` | Parámetros inválidos (`page` o `size` fuera de rango, `id` no numérico) |
+| `404` | El recurso no existe, o la ruta no existe |
+| `405` | Método HTTP no soportado (por ejemplo, `POST` en un listado) |
+| `500` | Error inesperado de la aplicación |
+| `502` | SWAPI respondió con un error |
+| `503` | No se pudo conectar con SWAPI |
+| `504` | SWAPI no respondió a tiempo (ver timeouts en [Configuración](#configuración)) |
+
+Los errores de validación incluyen la lista de parámetros inválidos en `errors`:
+
+```json
+{
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "Invalid request parameters",
+  "instance": "/api/v1/people",
+  "errors": [
+    { "parameter": "page", "message": "must be greater than or equal to 1" },
+    { "parameter": "size", "message": "must be less than or equal to 100" }
+  ]
+}
+```
+
+Las respuestas de error nunca incluyen detalles internos: los errores `5xx` responden con un mensaje genérico y el detalle técnico se registra en el log de la aplicación.
+
 ## Decisiones de arquitectura
 
 Las decisiones de diseño, con sus alternativas y motivos, están documentadas como ADRs en [`docs/adr`](docs/adr/README.md).
@@ -244,5 +277,5 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Listado paginado y filtrado de Films | ✅ Listo |
 | Listado paginado y filtrado de Starships | ✅ Listo |
 | Listado paginado y filtrado de Vehicles | ✅ Listo |
-| Manejo de errores | ⏳ Pendiente |
+| Manejo de errores | ✅ Listo |
 | Documentación de la API (Swagger / OpenAPI) | ⏳ Pendiente |

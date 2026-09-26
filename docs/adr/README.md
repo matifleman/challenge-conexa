@@ -17,6 +17,7 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0009](0009-films-filtro-por-titulo-y-atributos-tipados.md) | Films: filtro por título y atributos tipados | Aceptada |
 | [0010](0010-duplicacion-aceptada-en-services.md) | Duplicación aceptada entre los services de entidades | Aceptada |
 | [0011](0011-estrategia-de-testing.md) | Estrategia de testing | Aceptada |
+| [0012](0012-manejo-de-errores-completo.md) | Manejo de errores completo | Aceptada |
 
 ## Mejoras futuras
 
