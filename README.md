@@ -194,6 +194,44 @@ Respuesta de una nave:
 
 Los atributos se exponen como texto, tal como los informa SWAPI: pueden incluir separadores de miles (`"342,953"`), rangos (`"30-165"`) o valores como `"n/a"` y `"unknown"`.
 
+### Vehicles
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/v1/vehicles` | Listado paginado, con filtro opcional por nombre |
+| `GET` | `/api/v1/vehicles/{id}` | Detalle de un vehículo |
+
+Acepta los mismos parámetros que People (`page`, `size` y `name`) y tiene el mismo comportamiento.
+
+**Ejemplos**
+
+```bash
+curl "http://localhost:8080/api/v1/vehicles?size=2"
+curl "http://localhost:8080/api/v1/vehicles?name=speeder"
+curl "http://localhost:8080/api/v1/vehicles/4"
+```
+
+Respuesta de un vehículo:
+
+```json
+{
+  "id": "4",
+  "name": "Sand Crawler",
+  "model": "Digger Crawler",
+  "manufacturer": "Corellia Mining Corporation",
+  "vehicleClass": "wheeled",
+  "costInCredits": "150000",
+  "length": "36.8 ",
+  "crew": "46",
+  "passengers": "30",
+  "cargoCapacity": "50000",
+  "consumables": "2 months",
+  "maxAtmospheringSpeed": "30"
+}
+```
+
+Igual que en Starships, los atributos se exponen como texto, tal como los informa SWAPI.
+
 ## Decisiones de arquitectura
 
 Las decisiones de diseño, con sus alternativas y motivos, están documentadas como ADRs en [`docs/adr`](docs/adr/README.md).
@@ -205,6 +243,6 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Listado paginado y filtrado de People | ✅ Listo |
 | Listado paginado y filtrado de Films | ✅ Listo |
 | Listado paginado y filtrado de Starships | ✅ Listo |
-| Listado paginado y filtrado de Vehicles | ⏳ Pendiente |
+| Listado paginado y filtrado de Vehicles | ✅ Listo |
 | Manejo de errores | ⏳ Pendiente |
 | Documentación de la API (Swagger / OpenAPI) | ⏳ Pendiente |
