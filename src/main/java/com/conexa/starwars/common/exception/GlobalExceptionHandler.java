@@ -57,6 +57,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Last-resort handler for unexpected errors: the client gets a generic 500 without internal details,
+     * while the full stack trace is logged for diagnosis.
+     */
+    @ExceptionHandler(Exception.class)
+    ProblemDetail handleUnexpected(Exception ex) {
+        log.error("Unexpected error", ex);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
+    }
+
+    /**
      * Adds an {@code errors} property listing each invalid parameter, so clients know what to fix
      * instead of receiving a generic "Validation failure".
      */

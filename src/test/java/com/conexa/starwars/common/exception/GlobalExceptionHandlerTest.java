@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -93,5 +95,16 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/api/v1/people/1"))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.detail").value("The Star Wars API is currently unavailable"));
+    }
+
+    @Test
+    void unexpectedErrorReturnsGenericInternalServerError() throws Exception {
+        when(peopleService.findById(1)).thenThrow(new IllegalStateException("database password is secret"));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("An unexpected error occurred"))
+                .andExpect(content().string(not(containsString("secret"))));
     }
 }
