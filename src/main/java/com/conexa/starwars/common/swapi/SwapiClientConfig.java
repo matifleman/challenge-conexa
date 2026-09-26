@@ -45,4 +45,9 @@ public class SwapiClientConfig {
     SwapiStarshipsClient swapiStarshipsClient(HttpServiceProxyFactory swapiProxyFactory) {
         return swapiProxyFactory.createClient(SwapiStarshipsClient.class);
     }
+
+    @Bean
+    SwapiVehiclesClient swapiVehiclesClient(HttpServiceProxyFactory swapiProxyFactory) {
+        return swapiProxyFactory.createClient(SwapiVehiclesClient.class);
+    }
 }
