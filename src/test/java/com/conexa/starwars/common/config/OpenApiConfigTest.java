@@ -36,6 +36,21 @@ class OpenApiConfigTest {
     }
 
     @Test
+    void apiDocsIncludeEndpointDescriptionsAndSpecificErrors() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.paths['/api/v1/people'].get.summary").value("List people"))
+                .andExpect(jsonPath("$.paths['/api/v1/people'].get.parameters[?(@.name == 'size')].description")
+                        .value("Number of elements per page"))
+                .andExpect(jsonPath("$.paths['/api/v1/people'].get.parameters[?(@.name == 'size')].schema.maximum")
+                        .value(100))
+                .andExpect(jsonPath("$.paths['/api/v1/people'].get.responses", hasKey("400")))
+                .andExpect(jsonPath("$.paths['/api/v1/films'].get.parameters[?(@.name == 'title')]").exists())
+                .andExpect(jsonPath("$.paths['/api/v1/vehicles/{id}'].get.responses", hasKey("404")))
+                .andExpect(jsonPath("$.paths['/api/v1/starships'].get.responses['200'].content").exists());
+    }
+
+    @Test
     void swaggerUiIsServed() throws Exception {
         mockMvc.perform(get("/swagger-ui/index.html"))
                 .andExpect(status().isOk());
