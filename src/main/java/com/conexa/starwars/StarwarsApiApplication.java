@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class StarwarsApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StarwarsApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(StarwarsApiApplication.class, args);
+    }
 
 }

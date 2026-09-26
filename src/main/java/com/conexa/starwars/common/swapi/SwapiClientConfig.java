@@ -17,16 +17,20 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class SwapiClientConfig {
 
-	@Bean
-	RestClient swapiRestClient(RestClient.Builder builder, SwapiProperties properties) {
-		return builder.baseUrl(properties.baseUrl()).build();
-	}
+    @Bean
+    RestClient swapiRestClient(RestClient.Builder builder, SwapiProperties properties) {
+        return builder.baseUrl(properties.baseUrl()).build();
+    }
 
-	@Bean
-	HttpServiceProxyFactory swapiProxyFactory(RestClient swapiRestClient) {
-		return HttpServiceProxyFactory
-				.builderFor(RestClientAdapter.create(swapiRestClient))
-				.build();
-	}
+    @Bean
+    HttpServiceProxyFactory swapiProxyFactory(RestClient swapiRestClient) {
+        return HttpServiceProxyFactory
+                .builderFor(RestClientAdapter.create(swapiRestClient))
+                .build();
+    }
 
+    @Bean
+    SwapiPeopleClient swapiPeopleClient(HttpServiceProxyFactory swapiProxyFactory) {
+        return swapiProxyFactory.createClient(SwapiPeopleClient.class);
+    }
 }
