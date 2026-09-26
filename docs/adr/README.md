@@ -14,3 +14,13 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0006](0006-estructura-de-paquetes.md) | Estructura de paquetes híbrida | Aceptada |
 | [0007](0007-versionado-de-la-api.md) | Versionado de la API por URI | Aceptada |
 | [0008](0008-flujo-de-trabajo-git.md) | GitHub Flow con squash merge | Aceptada |
+| [0009](0009-films-filtro-por-titulo-y-atributos-tipados.md) | Films: filtro por título y atributos tipados | Aceptada |
+| [0010](0010-duplicacion-aceptada-en-services.md) | Duplicación aceptada entre los services de entidades | Aceptada |
+| [0011](0011-estrategia-de-testing.md) | Estrategia de testing | Aceptada |
+
+## Mejoras futuras
+
+Mejoras identificadas durante el desarrollo y documentadas en los ADR correspondientes:
+
+- **Relaciones como ids propios** (ADR 0009): exponer las relaciones entre recursos como ids navegables dentro de la API, sin llamadas extra a SWAPI.
+- **Helpers compartidos entre services** (ADR 0010): extraer la paginación desde SWAPI y la traducción del `404` a funciones reutilizables.
