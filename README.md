@@ -115,6 +115,43 @@ Respuesta de un listado:
 }
 ```
 
+### Films
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/v1/films` | Listado paginado, con filtro opcional por título |
+| `GET` | `/api/v1/films/{id}` | Detalle de un film |
+
+**Parámetros del listado**
+
+| Parámetro | Descripción | Por defecto | Restricciones |
+|---|---|---|---|
+| `page` | Número de página (empieza en 1) | `1` | Mínimo 1 |
+| `size` | Elementos por página | `10` | Entre 1 y 100 |
+| `title` | Filtro por título (parcial, sin distinguir mayúsculas) | — | Opcional |
+
+**Ejemplos**
+
+```bash
+curl "http://localhost:8080/api/v1/films?size=2"
+curl "http://localhost:8080/api/v1/films?title=the"
+curl "http://localhost:8080/api/v1/films/1"
+```
+
+Respuesta de un film:
+
+```json
+{
+  "id": "1",
+  "title": "A New Hope",
+  "episodeId": 4,
+  "director": "George Lucas",
+  "producer": "Gary Kurtz, Rick McCallum",
+  "releaseDate": "1977-05-25",
+  "openingCrawl": "It is a period of civil war. ..."
+}
+```
+
 ## Decisiones de arquitectura
 
 Las decisiones de diseño, con sus alternativas y motivos, están documentadas como ADRs en [`docs/adr`](docs/adr/README.md).
