@@ -10,3 +10,8 @@ spring:
 swapi:
   base-url: https://www.swapi.tech/api
 
+
+springdoc:
+  swagger-ui:
+    # Kept public on purpose: the interactive docs are the main way to try the deployed API
+    enabled: true
