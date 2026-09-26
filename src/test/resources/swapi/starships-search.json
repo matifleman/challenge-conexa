@@ -1,0 +1,192 @@
+{
+  "message": "ok",
+  "result": [
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "2 years",
+        "name": "Star Destroyer",
+        "cargo_capacity": "36000000",
+        "passengers": "n/a",
+        "max_atmosphering_speed": "975",
+        "crew": "47,060",
+        "length": "1,600",
+        "model": "Imperial I-class Star Destroyer",
+        "cost_in_credits": "150000000",
+        "manufacturer": "Kuat Drive Yards",
+        "pilots": [],
+        "MGLT": "60",
+        "starship_class": "Star Destroyer",
+        "hyperdrive_rating": "2.0",
+        "films": [
+          "https://www.swapi.tech/api/films/1",
+          "https://www.swapi.tech/api/films/2",
+          "https://www.swapi.tech/api/films/3"
+        ],
+        "url": "https://www.swapi.tech/api/starships/3"
+      },
+      "_id": "5f63a34fee9fd7000499be1f",
+      "description": "A Starship",
+      "uid": "3",
+      "__v": 2
+    },
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "3 years",
+        "name": "Death Star",
+        "cargo_capacity": "1000000000000",
+        "passengers": "843,342",
+        "max_atmosphering_speed": "n/a",
+        "crew": "342,953",
+        "length": "120000",
+        "model": "DS-1 Orbital Battle Station",
+        "cost_in_credits": "1000000000000",
+        "manufacturer": "Imperial Department of Military Research, Sienar Fleet Systems",
+        "pilots": [],
+        "MGLT": "10",
+        "starship_class": "Deep Space Mobile Battlestation",
+        "hyperdrive_rating": "4.0",
+        "films": [
+          "https://www.swapi.tech/api/films/1"
+        ],
+        "url": "https://www.swapi.tech/api/starships/9"
+      },
+      "_id": "5f63a34fee9fd7000499be21",
+      "description": "A Starship",
+      "uid": "9",
+      "__v": 2
+    },
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "unknown",
+        "name": "Naboo Royal Starship",
+        "cargo_capacity": "unknown",
+        "passengers": "unknown",
+        "max_atmosphering_speed": "920",
+        "crew": "8",
+        "length": "76",
+        "model": "J-type 327 Nubian royal starship",
+        "cost_in_credits": "unknown",
+        "manufacturer": "Theed Palace Space Vessel Engineering Corps, Nubia Star Drives",
+        "pilots": [
+          "https://www.swapi.tech/api/people/39"
+        ],
+        "MGLT": "unknown",
+        "starship_class": "yacht",
+        "hyperdrive_rating": "1.8",
+        "films": [
+          "https://www.swapi.tech/api/films/4"
+        ],
+        "url": "https://www.swapi.tech/api/starships/40"
+      },
+      "_id": "5f63a34fee9fd7000499be31",
+      "description": "A Starship",
+      "uid": "40",
+      "__v": 2
+    },
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "7 days",
+        "name": "Jedi starfighter",
+        "cargo_capacity": "60",
+        "passengers": "0",
+        "max_atmosphering_speed": "1150",
+        "crew": "1",
+        "length": "8",
+        "model": "Delta-7 Aethersprite-class interceptor",
+        "cost_in_credits": "180000",
+        "manufacturer": "Kuat Systems Engineering",
+        "pilots": [
+          "https://www.swapi.tech/api/people/10",
+          "https://www.swapi.tech/api/people/58"
+        ],
+        "MGLT": "unknown",
+        "starship_class": "Starfighter",
+        "hyperdrive_rating": "1.0",
+        "films": [
+          "https://www.swapi.tech/api/films/5",
+          "https://www.swapi.tech/api/films/6"
+        ],
+        "url": "https://www.swapi.tech/api/starships/48"
+      },
+      "_id": "5f63a34fee9fd7000499be35",
+      "description": "A Starship",
+      "uid": "48",
+      "__v": 2
+    },
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "unknown",
+        "name": "Naboo star skiff",
+        "cargo_capacity": "unknown",
+        "passengers": "3",
+        "max_atmosphering_speed": "1050",
+        "crew": "3",
+        "length": "29.2",
+        "model": "J-type star skiff",
+        "cost_in_credits": "unknown",
+        "manufacturer": "Theed Palace Space Vessel Engineering Corps/Nubia Star Drives, Incorporated",
+        "pilots": [
+          "https://www.swapi.tech/api/people/10",
+          "https://www.swapi.tech/api/people/35"
+        ],
+        "MGLT": "unknown",
+        "starship_class": "yacht",
+        "hyperdrive_rating": "0.5",
+        "films": [
+          "https://www.swapi.tech/api/films/6"
+        ],
+        "url": "https://www.swapi.tech/api/starships/64"
+      },
+      "_id": "5f63a34fee9fd7000499be3c",
+      "description": "A Starship",
+      "uid": "64",
+      "__v": 2
+    },
+    {
+      "properties": {
+        "created": "2026-09-26T07:26:24.119Z",
+        "edited": "2026-09-26T07:26:24.119Z",
+        "consumables": "7 days",
+        "name": "Belbullab-22 starfighter",
+        "cargo_capacity": "140",
+        "passengers": "0",
+        "max_atmosphering_speed": "1100",
+        "crew": "1",
+        "length": "6.71",
+        "model": "Belbullab-22 starfighter",
+        "cost_in_credits": "168000",
+        "manufacturer": "Feethan Ottraw Scalable Assemblies",
+        "pilots": [
+          "https://www.swapi.tech/api/people/10",
+          "https://www.swapi.tech/api/people/79"
+        ],
+        "MGLT": "unknown",
+        "starship_class": "starfighter",
+        "hyperdrive_rating": "6",
+        "films": [
+          "https://www.swapi.tech/api/films/6"
+        ],
+        "url": "https://www.swapi.tech/api/starships/74"
+      },
+      "_id": "5f63a34fee9fd7000499be40",
+      "description": "A Starship",
+      "uid": "74",
+      "__v": 2
+    }
+  ],
+  "apiVersion": "1.0",
+  "timestamp": "2026-09-26T14:07:27.277Z",
+  "support": {
+    "contact": "admin@swapi.tech"
+  }
+}

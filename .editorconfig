@@ -10,6 +10,8 @@ trim_trailing_whitespace = true
 
 [*.java]
 ij_continuation_indent_size = 8
+ij_java_align_multiline_parameters = false
+ij_java_align_multiline_records = false
 
 [*.{yml,yaml}]
 indent_size = 2
