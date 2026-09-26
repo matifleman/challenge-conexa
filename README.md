@@ -152,6 +152,48 @@ Respuesta de un film:
 }
 ```
 
+SWAPI no pagina los films, por lo que la paginación siempre se resuelve en la API. El resto del comportamiento (páginas fuera de rango, filtros sin coincidencias, errores `400` y `404`) es igual al de People.
+
+### Starships
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/v1/starships` | Listado paginado, con filtro opcional por nombre |
+| `GET` | `/api/v1/starships/{id}` | Detalle de una nave |
+
+Acepta los mismos parámetros que People (`page`, `size` y `name`) y tiene el mismo comportamiento.
+
+**Ejemplos**
+
+```bash
+curl "http://localhost:8080/api/v1/starships?size=2"
+curl "http://localhost:8080/api/v1/starships?name=star"
+curl "http://localhost:8080/api/v1/starships/9"
+```
+
+Respuesta de una nave:
+
+```json
+{
+  "id": "9",
+  "name": "Death Star",
+  "model": "DS-1 Orbital Battle Station",
+  "manufacturer": "Imperial Department of Military Research, Sienar Fleet Systems",
+  "starshipClass": "Deep Space Mobile Battlestation",
+  "costInCredits": "1000000000000",
+  "length": "120000",
+  "crew": "342,953",
+  "passengers": "843,342",
+  "cargoCapacity": "1000000000000",
+  "consumables": "3 years",
+  "maxAtmospheringSpeed": "n/a",
+  "hyperdriveRating": "4.0",
+  "mglt": "10"
+}
+```
+
+Los atributos se exponen como texto, tal como los informa SWAPI: pueden incluir separadores de miles (`"342,953"`), rangos (`"30-165"`) o valores como `"n/a"` y `"unknown"`.
+
 ## Decisiones de arquitectura
 
 Las decisiones de diseño, con sus alternativas y motivos, están documentadas como ADRs en [`docs/adr`](docs/adr/README.md).
@@ -161,8 +203,8 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Funcionalidad | Estado |
 |---|---|
 | Listado paginado y filtrado de People | ✅ Listo |
-| Listado paginado y filtrado de Films | ⏳ Pendiente |
-| Listado paginado y filtrado de Starships | ⏳ Pendiente |
+| Listado paginado y filtrado de Films | ✅ Listo |
+| Listado paginado y filtrado de Starships | ✅ Listo |
 | Listado paginado y filtrado de Vehicles | ⏳ Pendiente |
 | Manejo de errores | ⏳ Pendiente |
 | Documentación de la API (Swagger / OpenAPI) | ⏳ Pendiente |
