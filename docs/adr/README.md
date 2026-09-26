@@ -18,6 +18,7 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0010](0010-duplicacion-aceptada-en-services.md) | Duplicación aceptada entre los services de entidades | Aceptada |
 | [0011](0011-estrategia-de-testing.md) | Estrategia de testing | Aceptada |
 | [0012](0012-manejo-de-errores-completo.md) | Manejo de errores completo | Aceptada |
+| [0013](0013-documentacion-openapi.md) | Documentación de la API con springdoc-openapi | Aceptada |
 
 ## Mejoras futuras
 

@@ -9,6 +9,7 @@ API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.t
 - Java 21
 - Spring Boot 4.1 (Spring Web MVC, Validation, Actuator)
 - Cliente HTTP declarativo (`@HttpExchange`) sobre `RestClient`
+- springdoc-openapi (OpenAPI 3.1 + Swagger UI)
 - Maven (vía Maven Wrapper)
 - JUnit 5, Mockito, MockMvc y `MockRestServiceServer`
 
@@ -51,6 +52,15 @@ Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemp
 Los tests no dependen de la red: las respuestas de SWAPI se simulan con respuestas reales guardadas en `src/test/resources/swapi/`.
 
 ## Uso
+
+### Documentación interactiva (Swagger)
+
+Con la aplicación levantada, la documentación de todos los endpoints está disponible en:
+
+- **Swagger UI:** [`http://localhost:8080/swagger-ui.html`](http://localhost:8080/swagger-ui.html): permite ver cada endpoint con sus parámetros, respuestas y errores, y probarlo desde el navegador con **Try it out**.
+- **Especificación OpenAPI (JSON):** [`http://localhost:8080/v3/api-docs`](http://localhost:8080/v3/api-docs): útil para importar la API en Postman u otras herramientas.
+
+Las secciones siguientes resumen el uso de cada recurso.
 
 ### People
 
@@ -278,4 +288,4 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Listado paginado y filtrado de Starships | ✅ Listo |
 | Listado paginado y filtrado de Vehicles | ✅ Listo |
 | Manejo de errores | ✅ Listo |
-| Documentación de la API (Swagger / OpenAPI) | ⏳ Pendiente |
+| Documentación de la API (Swagger / OpenAPI) | ✅ Listo |
