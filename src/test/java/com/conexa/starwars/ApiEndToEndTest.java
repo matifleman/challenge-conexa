@@ -2,6 +2,7 @@ package com.conexa.starwars;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.jayway.jsonpath.JsonPath;
@@ -12,11 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.test.autoconfigure.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -49,7 +53,19 @@ class ApiEndToEndTest {
     @Autowired
     private MockRestServiceServer swapi;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private String bearerToken;
+
+    @BeforeEach
+    void clearCaches() {
+        // The application context, and with it the caches, is shared by every tesat in this class
+        cacheManager.getCacheNames().stream()
+                .map(cacheManager::getCache)
+                .filter(Objects::nonNull)
+                .forEach(Cache::clear);
+    }
 
     @BeforeEach
     void logIn() throws Exception {
@@ -141,6 +157,29 @@ class ApiEndToEndTest {
         mockMvc.perform(get("/api/v1/starships/1").header(HttpHeaders.AUTHORIZATION, bearerToken))
                 .andExpect(status().isBadGateway())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+    }
+
+    @Test
+    void repeatedRequestIsServedFromCache() throws Exception {
+        swapi.expect(ExpectedCount.once(), requestTo(SWAPI + "/starships/9"))
+                .andRespond(withSuccess(fixture("starship.json"), MediaType.APPLICATION_JSON));
+
+        for (int i = 0; i < 2; i++) {
+            mockMvc.perform(get("/api/v1/starships/9").header(HttpHeaders.AUTHORIZATION, bearerToken))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.name").value("Death Star"));
+        }
+    }
+
+    @Test
+    void swapiErrorsAreNotCached() throws Exception{
+        swapi.expect(ExpectedCount.twice(), requestTo(SWAPI + "/people/999"))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        for (int i = 0; i < 2; i++) {
+            mockMvc.perform(get("/api/v1/people/999").header(HttpHeaders.AUTHORIZATION, bearerToken))
+                    .andExpect(status().isNotFound());
+        }
     }
 
     @Test
