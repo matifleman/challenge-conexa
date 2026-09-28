@@ -21,6 +21,12 @@ spring:
       data-source-properties:
         # citext only compares case-insensitively when string parameters are not sent as varchar
         stringtype: unspecified
+  cache:
+  # Fixed list: a misspelled name in @Cacheable fails instead of silently creating an unconfigured cache
+    cache-names: people-list, people-by-id, films-list, films-by-id, starships-list, starships-by-id, vehicles-list, vehicles-by-id
+    caffeine:
+      # SWAPI data is effectively static; the size bound keeps memory predictable on a 512 MB instance
+      spec: maximumSize=500,expireAfterWrite=24h
 
 swapi:
   base-url: https://www.swapi.tech/api
