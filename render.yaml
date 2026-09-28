@@ -1,0 +1,14 @@
+# Render Blueprint: the web service is defined here and the database credentials (Neon) are set in the dashboard
+services:
+  - type: web
+    name: starwars-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false

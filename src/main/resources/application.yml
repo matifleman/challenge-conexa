@@ -1,3 +1,9 @@
+server:
+  # Hosting platforms assign the port through the PORT environment variable
+  port: ${PORT:8080}
+  # Behind the platform's HTTPS proxy, honor X-Forwarded-* so generated URLs (e.g. Swagger's server URL) use https
+  forward-headers-strategy: framework
+
 spring:
   application:
     name: starwars-api

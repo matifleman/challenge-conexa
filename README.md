@@ -51,8 +51,32 @@ curl http://localhost:8080/actuator/health
 | `spring.datasource.password` | Contraseña de la base | `starwars` |
 | `jwt.issuer` | Emisor (`iss`) de los tokens | `starwars-api` |
 | `jwt.expiration` | Duración de los tokens | `1h` |
+| `server.port` (variable `PORT`) | Puerto HTTP | `8080` |
 
 Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemplo `SWAPI_BASEURL` o `SPRING_DATASOURCE_URL`. Los valores por defecto de la base coinciden con `compose.yaml` y son solo para desarrollo local.
+
+### Con Docker
+
+La imagen es la misma que se usa en producción:
+
+```bash
+docker build -t starwars-api .
+docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/starwars \
+  --add-host=host.docker.internal:host-gateway \
+  starwars-api
+```
+
+## Deploy
+
+La API está publicada en Render, con la base de datos en Neon (ver [ADR 0019](docs/adr/0019-deploy-en-render-y-neon.md)):
+
+- **API:** `https://<servicio>.onrender.com`
+- **Swagger UI:** `https://<servicio>.onrender.com/swagger-ui.html`
+
+> El plan gratuito suspende el servicio tras 15 minutos sin uso: el primer pedido después de una pausa puede tardar alrededor de dos minutos, y los tokens emitidos antes de la pausa dejan de ser válidos (hay que volver a hacer login).
+
+Cada merge a `main` se deploya automáticamente. El servicio está definido en [`render.yaml`](render.yaml); las credenciales de la base se configuran como variables de entorno en Render (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`).
 
 ## Cómo correr los tests
 
