@@ -11,6 +11,7 @@ import java.util.List;
 import com.conexa.starwars.auth.config.JwtProperties;
 import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.common.exception.ResourceAlreadyExistsException;
+import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +50,9 @@ class AuthServiceTest {
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Mock
+    private LoginAttemptService loginAttemptService;
 
     private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -62,7 +67,7 @@ class AuthServiceTest {
         authService = new AuthService(userDetailsManager, passwordEncoder, authenticationManager,
                 NimbusJwtEncoder.withKeyPair((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate())
                         .build(),
-                jwtProperties);
+                jwtProperties, loginAttemptService);
     }
 
     @Test
@@ -106,14 +111,27 @@ class AuthServiceTest {
         verify(authenticationManager).authenticate(captor.capture());
         assertThat(captor.getValue().getName()).isEqualTo("LUKE");
         assertThat(captor.getValue().getCredentials()).isEqualTo("password123");
+        verify(loginAttemptService).loginSucceeded("LUKE");
     }
 
     @Test
-    void loginPropagatesBadCredentials() {
+    void loginRecordsFailedAttemptAndPropagatesBadCredentials() {
         when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Bad credentials"));
 
         assertThatThrownBy(() -> authService.login("luke", "wrong-password"))
                 .isInstanceOf(BadCredentialsException.class);
+        verify(loginAttemptService).loginFailed("luke");
+        verify(loginAttemptService, never()).loginSucceeded(any());
+    }
+
+    @Test
+    void loginRejectsBlockedUsernameWithoutCheckingCredentials() {
+        doThrow(new TooManyLoginAttemptsException(Duration.ofMinutes(15)))
+                .when(loginAttemptService).checkNotBlocked("luke");
+
+        assertThatThrownBy(() -> authService.login("luke", "password123"))
+                .isInstanceOf(TooManyLoginAttemptsException.class);
+        verify(authenticationManager, never()).authenticate(any());
     }
 
     private static KeyPair rsaKeyPair() {
