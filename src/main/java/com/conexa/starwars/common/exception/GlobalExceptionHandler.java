@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpServerErrorException;
@@ -36,6 +39,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     ProblemDetail handleNotFound(ResourceNotFoundException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    ProblemDetail handleAlreadyExists(ResourceAlreadyExistsException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    /**
+     * An unknown username and a wrong password get the same response, so it cannot be used to find out
+     * which users exist.
+     */
+    @ExceptionHandler(BadCredentialsException.class)
+    ProblemDetail handleBadCredentials(BadCredentialsException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+    }
+
+    /**
+     * Any other authentication failure. Handled explicitly so it is not reported as a 500 by the catch-all handler.
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    ProblemDetail handleAuthentication(AuthenticationException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
+                "Authentication is required to access this resource");
     }
 
     @ExceptionHandler(HttpServerErrorException.class)
@@ -81,6 +107,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
         ProblemDetail body = ex.getBody();
         body.setDetail("Invalid request parameters");
+        body.setProperty("errors", errors);
+        return handleExceptionInternal(ex, body, headers, status, request);
+    }
+
+    /**
+     * Same {@code errors} format as invalid parameters, applied to the fields of an invalid request body.
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+            HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        List<ParameterError> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> new ParameterError(error.getField(), error.getDefaultMessage()))
+                .toList();
+
+        ProblemDetail body = ex.getBody();
+        body.setDetail("Invalid request body");
         body.setProperty("errors", errors);
         return handleExceptionInternal(ex, body, headers, status, request);
     }

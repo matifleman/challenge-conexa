@@ -11,6 +11,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -97,6 +99,36 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/api/v1/people/1"))
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.detail").value("The Star Wars API is currently unavailable"));
+    }
+
+    @Test
+    void alreadyExistingResourceReturnsConflict() throws Exception {
+        when(peopleService.findById(1)).thenThrow(new ResourceAlreadyExistsException("User", "luke"));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("User 'luke' already exists"));
+    }
+
+    @Test
+    void badCredentialsReturnUnauthorizedWithGenericMessage() throws Exception {
+        when(peopleService.findById(1)).thenThrow(new BadCredentialsException("User luke not found"));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("Invalid username or password"));
+    }
+
+    @Test
+    void otherAuthenticationFailuresReturnUnauthorized() throws Exception {
+        when(peopleService.findById(1)).thenThrow(new InsufficientAuthenticationException("no token"));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("Authentication is required to access this resource"));
     }
 
     @Test
