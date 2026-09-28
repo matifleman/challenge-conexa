@@ -172,7 +172,7 @@ class ApiEndToEndTest {
     }
 
     @Test
-    void swapiErrorsAreNotCached() throws Exception{
+    void swapiErrorsAreNotCached() throws Exception {
         swapi.expect(ExpectedCount.twice(), requestTo(SWAPI + "/people/999"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 

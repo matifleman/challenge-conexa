@@ -25,6 +25,7 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0017](0017-tokens-jwt.md) | Tokens JWT firmados con RS256 | Aceptada |
 | [0018](0018-tests-end-to-end-y-cobertura.md) | Tests end-to-end y cobertura con JaCoCo | Aceptada |
 | [0019](0019-deploy-en-render-y-neon.md) | Deploy en Render con PostgreSQL en Neon | Aceptada |
+| [0020](0020-cache-de-respuestas-de-swapi.md) | Caché de respuestas de SWAPI con Caffeine | Aceptada |
 
 ## Mejoras futuras
 

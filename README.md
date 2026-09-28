@@ -13,6 +13,7 @@ API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.t
 - Spring Security con OAuth2 Resource Server (JWT firmados con RS256)
 - PostgreSQL 17, JDBC y Flyway (migraciones)
 - Cliente HTTP declarativo (`@HttpExchange`) sobre `RestClient`
+- Caffeine (caché en memoria de las respuestas de SWAPI)
 - springdoc-openapi (OpenAPI 3.1 + Swagger UI)
 - Maven (vía Maven Wrapper)
 - JUnit 5, Mockito, MockMvc, `MockRestServiceServer` y Testcontainers
@@ -48,6 +49,7 @@ curl http://localhost:8080/actuator/health
 | `swapi.base-url` | URL base de SWAPI | `https://www.swapi.tech/api` |
 | `spring.http.clients.connect-timeout` | Tiempo máximo para conectar con SWAPI | `5s` |
 | `spring.http.clients.read-timeout` | Tiempo máximo de espera de la respuesta de SWAPI | `10s` |
+| `spring.cache.caffeine.spec` | Tamaño máximo y vencimiento de la caché de respuestas de SWAPI | `maximumSize=500,expireAfterWrite=24h` |
 | `spring.datasource.url` | URL de conexión a PostgreSQL | `jdbc:postgresql://localhost:5432/starwars` |
 | `spring.datasource.username` | Usuario de la base | `starwars` |
 | `spring.datasource.password` | Contraseña de la base | `starwars` |
