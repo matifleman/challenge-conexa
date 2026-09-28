@@ -1,6 +1,8 @@
 package com.conexa.starwars.auth.controller;
 
+import com.conexa.starwars.auth.dto.LoginRequest;
 import com.conexa.starwars.auth.dto.RegisterRequest;
+import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.auth.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,5 +26,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public void register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request.username(), request.password());
+    }
+
+    @PostMapping("/login")
+    public TokenResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request.username(), request.password());
     }
 }
