@@ -56,7 +56,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Any other authentication failure. Handled explicitly so it is not reported as a 500 by the catch-all handler.
+     * Any other authentication failure, such as a missing or invalid bearer token (forwarded by the security
+     * entry point). Handled explicitly so it is not reported as a 500 by the catch-all handler.
      */
     @ExceptionHandler(AuthenticationException.class)
     ProblemDetail handleAuthentication(AuthenticationException ex) {
