@@ -1,5 +1,7 @@
 # Star Wars API
 
+[![CI](https://github.com/matifleman/challenge-conexa/actions/workflows/ci.yml/badge.svg)](https://github.com/matifleman/challenge-conexa/actions/workflows/ci.yml)
+
 API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.tech/documentation) para listar **People**, **Films**, **Starships** y **Vehicles** de forma paginada, con filtrado por ID o por nombre. El acceso a los listados requiere autenticación con JWT.
 
 > 🚧 Proyecto en desarrollo. Este README se completa a medida que avanzan las funcionalidades.
@@ -76,7 +78,7 @@ La API está publicada en Render, con la base de datos en Neon (ver [ADR 0019](d
 
 > El plan gratuito suspende el servicio tras 15 minutos sin uso: el primer pedido después de una pausa puede tardar alrededor de dos minutos, y los tokens emitidos antes de la pausa dejan de ser válidos (hay que volver a hacer login).
 
-Cada merge a `main` se deploya automáticamente. El servicio está definido en [`render.yaml`](render.yaml); las credenciales de la base se configuran como variables de entorno en Render (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`).
+Cada merge a `main` se deploya automáticamente, una vez que el pipeline de CI (GitHub Actions: `./mvnw verify`) termina en verde. El servicio está definido en [`render.yaml`](render.yaml); las credenciales de la base se configuran como variables de entorno en Render (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`).
 
 ## Cómo correr los tests
 
