@@ -65,6 +65,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 "Authentication is required to access this resource");
     }
 
+    /**
+     * Tells the client when it may try again, in seconds, through the standard {@code Retry-After} header.
+     */
+    @ExceptionHandler(TooManyLoginAttemptsException.class)
+    ResponseEntity<ProblemDetail> handleTooManyLoginAttempts(TooManyLoginAttemptsException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(ex.getRetryAfter().toSeconds()))
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
+                        "Too many failed login attempts. Try again later."));
+    }
+
     @ExceptionHandler(HttpServerErrorException.class)
     ProblemDetail handleUpstreamError(HttpServerErrorException ex) {
         log.warn("Star Wars API responded with an error: {}", ex.getStatusCode());

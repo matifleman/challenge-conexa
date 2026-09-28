@@ -86,4 +86,28 @@ class SecurityIntegrationTest {
         mockMvc.perform(get("/api/v1/people").header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void repeatedFailedLoginsBlockTheUsernameEvenWithTheRightPassword() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/register").contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"username": "han", "password": "password123"}
+                                """))
+                .andExpect(status().isCreated());
+
+        for (int i = 0; i < 5; i++) {
+            mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+                            .content("""
+                                    {"username": "han", "password": "wrong-password"}
+                                    """))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"username": "han", "password": "password123"}
+                                """))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "900"));
+    }
 }

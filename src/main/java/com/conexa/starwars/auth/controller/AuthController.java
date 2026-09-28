@@ -56,6 +56,9 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Invalid username or password",
             content = @Content(mediaType = "application/problem+json",
                     schema = @Schema(implementation = ProblemDetail.class)))
+    @ApiResponse(responseCode = "429", description = "Too many failed attempts; retry after `Retry-After` seconds",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
     @PostMapping("/login")
     public TokenResponse login(@Valid @RequestBody LoginRequest request) {
         return authService.login(request.username(), request.password());

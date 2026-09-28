@@ -5,6 +5,7 @@ import java.time.Instant;
 import com.conexa.starwars.auth.config.JwtProperties;
 import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.common.exception.ResourceAlreadyExistsException;
+import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,14 +29,17 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
     private final JwtProperties jwtProperties;
+    private final LoginAttemptService loginAttemptService;
 
     public AuthService(UserDetailsManager userDetailsManager, PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager, JwtEncoder jwtEncoder, JwtProperties jwtProperties) {
+            AuthenticationManager authenticationManager, JwtEncoder jwtEncoder, JwtProperties jwtProperties,
+            LoginAttemptService loginAttemptService) {
         this.userDetailsManager = userDetailsManager;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtEncoder = jwtEncoder;
         this.jwtProperties = jwtProperties;
+        this.loginAttemptService = loginAttemptService;
     }
 
     /**
@@ -58,13 +62,15 @@ public class AuthService {
     }
 
     /**
-     * Verifies the credentials and issues a signed access token for the user.
+     * Verifies the credentials and issues a signed access token for the user. After too many consecutive failures
+     * the username is blocked for a while, and its credentials are not checked until the block lifts (ADR 0021).
      *
-     * @throws BadCredentialsException if the username does not exist or the password is wrong
+     * @throws BadCredentialsException       if the username does not exist or the password is wrong
+     * @throws TooManyLoginAttemptsException if the username is temporarily blocked
      */
     public TokenResponse login(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken.unauthenticated(username, password));
+        loginAttemptService.checkNotBlocked(username);
+        Authentication authentication = authenticate(username, password);
 
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -75,5 +81,17 @@ public class AuthService {
                 .build();
         String token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
         return TokenResponse.bearer(token, jwtProperties.expiration());
+    }
+
+    private Authentication authenticate(String username, String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    UsernamePasswordAuthenticationToken.unauthenticated(username, password));
+            loginAttemptService.loginSucceeded(username);
+            return authentication;
+        } catch (BadCredentialsException ex) {
+            loginAttemptService.loginFailed(username);
+            throw ex;
+        }
     }
 }

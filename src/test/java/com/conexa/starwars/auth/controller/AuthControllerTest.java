@@ -1,14 +1,18 @@
 package com.conexa.starwars.auth.controller;
 
+import java.time.Duration;
+
 import com.conexa.starwars.auth.config.JwtConfig;
 import com.conexa.starwars.auth.config.SecurityConfig;
 import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.auth.service.AuthService;
 import com.conexa.starwars.common.exception.ResourceAlreadyExistsException;
+import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -121,6 +126,22 @@ class AuthControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.detail").value("Invalid username or password"));
+    }
+
+    @Test
+    void loginRejectsBlockedUsernameWithRetryAfter() throws Exception {
+        when(authService.login("luke", "password123"))
+                .thenThrow(new TooManyLoginAttemptsException(Duration.ofMinutes(15)));
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"username": "luke", "password": "password123"}
+                                """))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "900"))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("Too many failed login attempts. Try again later."));
     }
 
     @Test
