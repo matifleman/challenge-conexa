@@ -6,6 +6,11 @@ spring:
       # Bound calls to SWAPI so a slow/hung upstream cannot block request threads indefinitely
       connect-timeout: 5s
       read-timeout: 10s
+  datasource:
+    # Defaults match compose.yaml for local development; other environments override them with SPRING_DATASOURCE_*
+    url: jdbc:postgresql://localhost:5432/starwars
+    username: starwars
+    password: starwars
 
 swapi:
   base-url: https://www.swapi.tech/api
