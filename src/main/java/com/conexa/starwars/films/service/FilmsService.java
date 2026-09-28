@@ -2,6 +2,7 @@ package com.conexa.starwars.films.service;
 
 import java.util.List;
 
+import com.conexa.starwars.common.config.CacheConfig;
 import com.conexa.starwars.common.dto.PageResponse;
 import com.conexa.starwars.common.exception.ResourceNotFoundException;
 import com.conexa.starwars.common.swapi.SwapiFilmsClient;
@@ -9,6 +10,7 @@ import com.conexa.starwars.common.swapi.dto.SwapiFilm;
 import com.conexa.starwars.common.swapi.dto.SwapiListResponse;
 import com.conexa.starwars.films.dto.FilmDto;
 import com.conexa.starwars.films.mapper.FilmMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -30,11 +32,13 @@ public class FilmsService {
 
     /**
      * Returns a page of films, optionally filtered by title (case-insensitive, partial match).
+     * Results are cached; SWAPI errors are not.
      *
      * @param page  1-based page number
      * @param size  page size
      * @param title optional title filter; blank means no filter
      */
+    @Cacheable(cacheNames = CacheConfig.FILMS_LIST, sync = true)
     public PageResponse<FilmDto> findAll(int page, int size, String title) {
         SwapiListResponse<SwapiFilm> response = (title == null || title.isBlank())
                 ? swapiFilmsClient.findAll()
@@ -46,10 +50,11 @@ public class FilmsService {
     }
 
     /**
-     * Returns a single film by id.
+     * Returns a single film by id. Results are cached; SWAPI errors are not.
      *
      * @throws ResourceNotFoundException if SWAPI has no film with the given id
      */
+    @Cacheable(cacheNames = CacheConfig.FILMS_BY_ID, sync = true)
     public FilmDto findById(int id) {
         try {
             return filmMapper.toDto(swapiFilmsClient.findById(id).result());

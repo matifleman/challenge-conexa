@@ -2,6 +2,7 @@ package com.conexa.starwars.starships.service;
 
 import java.util.List;
 
+import com.conexa.starwars.common.config.CacheConfig;
 import com.conexa.starwars.common.dto.PageResponse;
 import com.conexa.starwars.common.exception.ResourceNotFoundException;
 import com.conexa.starwars.common.swapi.SwapiStarshipsClient;
@@ -9,6 +10,7 @@ import com.conexa.starwars.common.swapi.dto.SwapiPageResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiStarship;
 import com.conexa.starwars.starships.dto.StarshipDto;
 import com.conexa.starwars.starships.mapper.StarshipMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -30,12 +32,13 @@ public class StarshipsService {
      * Returns a page of starships, optionally filtered by name (case-insensitive, partial match).
      * <p>
      * Without a filter, pagination is delegated to SWAPI. With a filter, SWAPI returns every match
-     * unpaginated, so the page is sliced in memory.
+     * unpaginated, so the page is sliced in memory. Results are cached; SWAPI errors are not.
      *
      * @param page 1-based page number
      * @param size page size
      * @param name optional name filter; blank means no filter
      */
+    @Cacheable(cacheNames = CacheConfig.STARSHIPS_LIST, sync = true)
     public PageResponse<StarshipDto> findAll(int page, int size, String name) {
         if (name == null || name.isBlank()) {
             return listPage(page, size);
@@ -47,10 +50,11 @@ public class StarshipsService {
     }
 
     /**
-     * Returns a single starship by id.
+     * Returns a single starship by id. Results are cached; SWAPI errors are not.
      *
      * @throws ResourceNotFoundException if SWAPI has no starship with the given id
      */
+    @Cacheable(cacheNames = CacheConfig.STARSHIPS_BY_ID, sync = true)
     public StarshipDto findById(int id) {
         try {
             return starshipMapper.toDto(swapiStarshipsClient.findById(id).result());
