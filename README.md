@@ -55,6 +55,8 @@ curl http://localhost:8080/actuator/health
 | `spring.datasource.password` | Contraseña de la base | `starwars` |
 | `jwt.issuer` | Emisor (`iss`) de los tokens | `starwars-api` |
 | `jwt.expiration` | Duración de los tokens | `1h` |
+| `auth.login-attempts.max-failures` | Logins fallidos seguidos que bloquean un username | `5` |
+| `auth.login-attempts.block-duration` | Duración del bloqueo, desde el último fallo | `15m` |
 | `server.port` (variable `PORT`) | Puerto HTTP | `8080` |
 
 Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemplo `SWAPI_BASEURL` o `SPRING_DATASOURCE_URL`. Los valores por defecto de la base coinciden con `compose.yaml` y son solo para desarrollo local.
@@ -148,6 +150,7 @@ TOKEN=$(curl -s -X POST http://localhost:8080/api/v1/auth/login \
 
 - `username`: de 3 a 50 caracteres entre letras, números, `.`, `_` y `-`. No distingue mayúsculas: `Luke` y `luke` son el mismo usuario.
 - `password`: de 8 a 72 caracteres. Se guarda hasheada con BCrypt.
+- Tras 5 logins fallidos seguidos, el username queda bloqueado 15 minutos (configurable): el login responde `429` con el header `Retry-After`, aunque la contraseña sea correcta.
 - El token dura 1 hora (configurable) y no hay refresh token: al vencer, se vuelve a hacer login.
 - Las claves de firma se generan al arrancar la aplicación, por lo que un reinicio invalida los tokens emitidos.
 
@@ -344,6 +347,7 @@ Todos los errores se responden con el formato estándar [`ProblemDetail`](https:
 | `404` | El recurso no existe, o la ruta no existe |
 | `405` | Método HTTP no soportado (por ejemplo, `POST` en un listado) |
 | `409` | El username ya está registrado |
+| `429` | Demasiados logins fallidos para el username; reintentar después de `Retry-After` segundos |
 | `500` | Error inesperado de la aplicación |
 | `502` | SWAPI respondió con un error |
 | `503` | No se pudo conectar con SWAPI |
