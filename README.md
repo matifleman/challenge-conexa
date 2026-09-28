@@ -71,8 +71,8 @@ docker run -p 8080:8080 \
 
 La API está publicada en Render, con la base de datos en Neon (ver [ADR 0019](docs/adr/0019-deploy-en-render-y-neon.md)):
 
-- **API:** `https://<servicio>.onrender.com`
-- **Swagger UI:** `https://<servicio>.onrender.com/swagger-ui.html`
+- **API:** [`https://starwars-api-zdeq.onrender.com`](https://starwars-api-zdeq.onrender.com)
+- **Swagger UI:** [`https://starwars-api-zdeq.onrender.com/swagger-ui.html`](https://starwars-api-zdeq.onrender.com/swagger-ui.html)
 
 > El plan gratuito suspende el servicio tras 15 minutos sin uso: el primer pedido después de una pausa puede tardar alrededor de dos minutos, y los tokens emitidos antes de la pausa dejan de ser válidos (hay que volver a hacer login).
 
