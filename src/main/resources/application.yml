@@ -19,6 +19,10 @@ spring:
 swapi:
   base-url: https://www.swapi.tech/api
 
+jwt:
+  issuer: starwars-api
+  expiration: 1h
+
 
 springdoc:
   swagger-ui:

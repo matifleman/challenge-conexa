@@ -26,4 +26,5 @@ La autenticación propia (ADR 0014) necesita guardar usuarios con su contraseña
 - El registro y el login usan componentes de Spring Security, con muy poco código propio.
 - No hay repositorio propio para testear: se verifica que el esquema funcione con el manager contra PostgreSQL real.
 - `citext` requiere la extensión del mismo nombre, incluida en PostgreSQL; algunos proveedores gestionados exigen habilitarla.
+- El driver JDBC de PostgreSQL envía los parámetros de texto como `varchar`, y la comparación con una columna `citext` pasa a distinguir mayúsculas. Se configura el driver con `stringtype=unspecified` para que los parámetros tomen el tipo de la columna.
 - Si el usuario necesitara más datos, se migra a una entidad propia sin cambiar las tablas existentes, mediante una nueva migración (ADR 0016).
