@@ -1,6 +1,6 @@
 # Star Wars API
 
-API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.tech/documentation) para listar **People**, **Films**, **Starships** y **Vehicles** de forma paginada, con filtrado por ID o por nombre.
+API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.tech/documentation) para listar **People**, **Films**, **Starships** y **Vehicles** de forma paginada, con filtrado por ID o por nombre. El acceso a los listados requiere autenticación con JWT.
 
 > 🚧 Proyecto en desarrollo. Este README se completa a medida que avanzan las funcionalidades.
 
@@ -8,23 +8,29 @@ API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.t
 
 - Java 21
 - Spring Boot 4.1 (Spring Web MVC, Validation, Actuator)
+- Spring Security con OAuth2 Resource Server (JWT firmados con RS256)
+- PostgreSQL 17, JDBC y Flyway (migraciones)
 - Cliente HTTP declarativo (`@HttpExchange`) sobre `RestClient`
 - springdoc-openapi (OpenAPI 3.1 + Swagger UI)
 - Maven (vía Maven Wrapper)
-- JUnit 5, Mockito, MockMvc y `MockRestServiceServer`
+- JUnit 5, Mockito, MockMvc, `MockRestServiceServer` y Testcontainers
 
 ## Requisitos
 
 - JDK 21
+- Docker (con Docker Compose), para la base de datos y para los tests
 - No hace falta instalar Maven: el proyecto incluye el wrapper (`./mvnw`).
 
 ## Cómo correrlo
 
 ```bash
+docker compose up -d      # PostgreSQL en localhost:5432
 ./mvnw spring-boot:run
 ```
 
-La aplicación levanta en `http://localhost:8080`.
+La aplicación levanta en `http://localhost:8080`. Al arrancar, Flyway crea las tablas de la base si todavía no existen.
+
+Para detener la base: `docker compose down` (los datos se conservan en un volumen; `docker compose down -v` los borra).
 
 Verificar que esté funcionando:
 
@@ -40,8 +46,13 @@ curl http://localhost:8080/actuator/health
 | `swapi.base-url` | URL base de SWAPI | `https://www.swapi.tech/api` |
 | `spring.http.clients.connect-timeout` | Tiempo máximo para conectar con SWAPI | `5s` |
 | `spring.http.clients.read-timeout` | Tiempo máximo de espera de la respuesta de SWAPI | `10s` |
+| `spring.datasource.url` | URL de conexión a PostgreSQL | `jdbc:postgresql://localhost:5432/starwars` |
+| `spring.datasource.username` | Usuario de la base | `starwars` |
+| `spring.datasource.password` | Contraseña de la base | `starwars` |
+| `jwt.issuer` | Emisor (`iss`) de los tokens | `starwars-api` |
+| `jwt.expiration` | Duración de los tokens | `1h` |
 
-Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemplo `SWAPI_BASEURL`.
+Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemplo `SWAPI_BASEURL` o `SPRING_DATASOURCE_URL`. Los valores por defecto de la base coinciden con `compose.yaml` y son solo para desarrollo local.
 
 ## Cómo correr los tests
 
@@ -49,7 +60,7 @@ Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemp
 ./mvnw test
 ```
 
-Los tests no dependen de la red: las respuestas de SWAPI se simulan con respuestas reales guardadas en `src/test/resources/swapi/`.
+Los tests no dependen de la red: las respuestas de SWAPI se simulan con respuestas reales guardadas en `src/test/resources/swapi/`. Los tests que usan la base levantan un PostgreSQL descartable con Testcontainers, por lo que Docker tiene que estar corriendo (no hace falta `docker compose up`).
 
 ## Uso
 
@@ -60,7 +71,53 @@ Con la aplicación levantada, la documentación de todos los endpoints está dis
 - **Swagger UI:** [`http://localhost:8080/swagger-ui.html`](http://localhost:8080/swagger-ui.html): permite ver cada endpoint con sus parámetros, respuestas y errores, y probarlo desde el navegador con **Try it out**.
 - **Especificación OpenAPI (JSON):** [`http://localhost:8080/v3/api-docs`](http://localhost:8080/v3/api-docs): útil para importar la API en Postman u otras herramientas.
 
+Para probar los endpoints protegidos desde Swagger UI: registrar un usuario, hacer login, copiar el `accessToken` y pegarlo en **Authorize**.
+
 Las secciones siguientes resumen el uso de cada recurso.
+
+### Autenticación
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `POST` | `/api/v1/auth/register` | Registra un usuario (`201`) |
+| `POST` | `/api/v1/auth/login` | Devuelve un access token |
+
+El registro y el login son públicos; el resto de los endpoints requiere el token en el header `Authorization: Bearer <token>`. La documentación (`/swagger-ui.html`, `/v3/api-docs`) y `/actuator/health` también son públicos.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username": "luke", "password": "password123"}'
+
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "luke", "password": "password123"}'
+```
+
+Respuesta del login:
+
+```json
+{
+  "accessToken": "eyJraWQiOi...",
+  "tokenType": "Bearer",
+  "expiresIn": 3600
+}
+```
+
+Los ejemplos de las secciones siguientes usan el token guardado en una variable:
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:8080/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "luke", "password": "password123"}' | sed -E 's/.*"accessToken":"([^"]+)".*/\1/')
+```
+
+**Reglas**
+
+- `username`: de 3 a 50 caracteres entre letras, números, `.`, `_` y `-`. No distingue mayúsculas: `Luke` y `luke` son el mismo usuario.
+- `password`: de 8 a 72 caracteres. Se guarda hasheada con BCrypt.
+- El token dura 1 hora (configurable) y no hay refresh token: al vencer, se vuelve a hacer login.
+- Las claves de firma se generan al arrancar la aplicación, por lo que un reinicio invalida los tokens emitidos.
 
 ### People
 
@@ -80,9 +137,9 @@ Las secciones siguientes resumen el uso de cada recurso.
 **Ejemplos**
 
 ```bash
-curl "http://localhost:8080/api/v1/people?page=1&size=2"
-curl "http://localhost:8080/api/v1/people?name=sky"
-curl "http://localhost:8080/api/v1/people/1"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/people?page=1&size=2"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/people?name=sky"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/people/1"
 ```
 
 Respuesta de un listado:
@@ -136,9 +193,9 @@ El formato de los errores se describe en [Errores](#errores).
 **Ejemplos**
 
 ```bash
-curl "http://localhost:8080/api/v1/films?size=2"
-curl "http://localhost:8080/api/v1/films?title=the"
-curl "http://localhost:8080/api/v1/films/1"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/films?size=2"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/films?title=the"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/films/1"
 ```
 
 Respuesta de un film:
@@ -169,9 +226,9 @@ Acepta los mismos parámetros que People (`page`, `size` y `name`) y tiene el mi
 **Ejemplos**
 
 ```bash
-curl "http://localhost:8080/api/v1/starships?size=2"
-curl "http://localhost:8080/api/v1/starships?name=star"
-curl "http://localhost:8080/api/v1/starships/9"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/starships?size=2"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/starships?name=star"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/starships/9"
 ```
 
 Respuesta de una nave:
@@ -209,9 +266,9 @@ Acepta los mismos parámetros que People (`page`, `size` y `name`) y tiene el mi
 **Ejemplos**
 
 ```bash
-curl "http://localhost:8080/api/v1/vehicles?size=2"
-curl "http://localhost:8080/api/v1/vehicles?name=speeder"
-curl "http://localhost:8080/api/v1/vehicles/4"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/vehicles?size=2"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/vehicles?name=speeder"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/vehicles/4"
 ```
 
 Respuesta de un vehículo:
@@ -250,15 +307,17 @@ Todos los errores se responden con el formato estándar [`ProblemDetail`](https:
 
 | Código | Cuándo |
 |---|---|
-| `400` | Parámetros inválidos (`page` o `size` fuera de rango, `id` no numérico) |
+| `400` | Parámetros inválidos (`page` o `size` fuera de rango, `id` no numérico) o body inválido (registro y login) |
+| `401` | Falta el token, es inválido o venció; o credenciales incorrectas en el login |
 | `404` | El recurso no existe, o la ruta no existe |
 | `405` | Método HTTP no soportado (por ejemplo, `POST` en un listado) |
+| `409` | El username ya está registrado |
 | `500` | Error inesperado de la aplicación |
 | `502` | SWAPI respondió con un error |
 | `503` | No se pudo conectar con SWAPI |
 | `504` | SWAPI no respondió a tiempo (ver timeouts en [Configuración](#configuración)) |
 
-Los errores de validación incluyen la lista de parámetros inválidos en `errors`:
+Los errores de validación incluyen la lista de parámetros (o campos del body) inválidos en `errors`:
 
 ```json
 {
@@ -289,3 +348,4 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Listado paginado y filtrado de Vehicles | ✅ Listo |
 | Manejo de errores | ✅ Listo |
 | Documentación de la API (Swagger / OpenAPI) | ✅ Listo |
+| Usuarios en PostgreSQL y autenticación con JWT | ✅ Listo |

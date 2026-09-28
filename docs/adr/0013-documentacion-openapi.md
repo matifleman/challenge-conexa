@@ -5,7 +5,7 @@
 
 ## Contexto
 
-La consigna pide que la aplicación esté bien documentada, y quien la evalúe necesita poder explorar y probar los endpoints sin leer el código. Además de lo que se puede inferir del código (rutas, parámetros, DTOs), la documentación tiene que explicar el comportamiento: qué hace cada endpoint, qué significa cada parámetro y qué errores puede devolver.
+La consigna pide que la aplicación esté bien documentada, y quien use la API necesita poder explorar y probar los endpoints sin leer el código. Además de lo que se puede inferir del código (rutas, parámetros, DTOs), la documentación tiene que explicar el comportamiento: qué hace cada endpoint, qué significa cada parámetro y qué errores puede devolver.
 
 Los errores `500`, `502`, `503` y `504` aplican a todos los endpoints (los produce el manejador global, ADR 0012), mientras que el `400` y el `404` dependen de cada endpoint.
 
