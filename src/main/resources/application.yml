@@ -35,6 +35,10 @@ jwt:
   issuer: starwars-api
   expiration: 1h
 
+auth:
+  login-attempts:
+    max-failures: 5
+    block-duration: 15m
 
 springdoc:
   swagger-ui:

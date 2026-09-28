@@ -2,6 +2,7 @@ package com.conexa.starwars.auth.config;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import org.springframework.security.provisioning.UserDetailsManager;
  * User storage and credential verification on top of Spring Security's standard JDBC schema (ADR 0015).
  */
 @Configuration
+@EnableConfigurationProperties(LoginAttemptProperties.class)
 public class UserConfig {
 
     /**
