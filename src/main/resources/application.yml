@@ -11,6 +11,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/starwars
     username: starwars
     password: starwars
+    hikari:
+      data-source-properties:
+        # citext only compares case-insensitively when string parameters are not sent as varchar
+        stringtype: unspecified
 
 swapi:
   base-url: https://www.swapi.tech/api
