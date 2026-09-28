@@ -57,10 +57,14 @@ Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemp
 ## Cómo correr los tests
 
 ```bash
-./mvnw test
+./mvnw test      # tests + reporte de cobertura
+./mvnw verify    # además, falla si la cobertura baja del mínimo
 ```
 
-Los tests no dependen de la red: las respuestas de SWAPI se simulan con respuestas reales guardadas en `src/test/resources/swapi/`. Los tests que usan la base levantan un PostgreSQL descartable con Testcontainers, por lo que Docker tiene que estar corriendo (no hace falta `docker compose up`).
+- **Tipos de tests:** unitarios de cada capa (services, controllers, cliente de SWAPI, manejo de errores), de integración con la base de datos y la seguridad, y end-to-end sobre la aplicación completa (`ApiEndToEndTest`): registro, login y consumo de los endpoints con un token real.
+- **Sin red:** las respuestas de SWAPI se simulan con respuestas reales guardadas en `src/test/resources/swapi/`.
+- **Docker:** los tests que usan la base levantan un PostgreSQL descartable con Testcontainers, por lo que Docker tiene que estar corriendo (no hace falta `docker compose up`).
+- **Cobertura:** el reporte de JaCoCo queda en `target/site/jacoco/index.html`. `./mvnw verify` exige un mínimo de 90 % de líneas y 85 % de ramas.
 
 ## Uso
 

@@ -23,6 +23,7 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0015](0015-gestion-de-usuarios-con-jdbcuserdetailsmanager.md) | Gestión de usuarios con JdbcUserDetailsManager | Aceptada |
 | [0016](0016-postgresql-con-migraciones-flyway.md) | PostgreSQL con migraciones Flyway | Aceptada |
 | [0017](0017-tokens-jwt.md) | Tokens JWT firmados con RS256 | Aceptada |
+| [0018](0018-tests-end-to-end-y-cobertura.md) | Tests end-to-end y cobertura con JaCoCo | Aceptada |
 
 ## Mejoras futuras
 
