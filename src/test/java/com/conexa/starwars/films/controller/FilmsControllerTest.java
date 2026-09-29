@@ -79,7 +79,8 @@ class FilmsControllerTest {
                 .andExpect(jsonPath("$.title").value("A New Hope"))
                 .andExpect(jsonPath("$.characterIds[1]").value("2"))
                 .andExpect(jsonPath("$.starshipIds[0]").value("2"))
-                .andExpect(jsonPath("$.vehicleIds[0]").value("4"));
+                .andExpect(jsonPath("$.vehicleIds[0]").value("4"))
+                .andExpect(jsonPath("$.speciesIds[2]").value("3"));
     }
 
     @Test
@@ -101,6 +102,7 @@ class FilmsControllerTest {
     private static FilmDto aNewHope() {
         return new FilmDto("1", "A New Hope", 4, "George Lucas", "Gary Kurtz, Rick McCallum",
                 LocalDate.of(1977, 5, 25), "It is a period of civil war.",
-                List.of("1", "2"), List.of("2", "3"), List.of("4"));
+                List.of("1", "2"), List.of("2", "3"), List.of("4"),
+                List.of("1", "2", "3"));
     }
 }

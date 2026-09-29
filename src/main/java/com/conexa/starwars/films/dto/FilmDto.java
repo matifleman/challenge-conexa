@@ -10,5 +10,6 @@ import java.util.List;
  */
 public record FilmDto(String id, String title, int episodeId, String director, String producer,
                       LocalDate releaseDate, String openingCrawl,
-                      List<String> characterIds, List<String> starshipIds, List<String> vehicleIds) {
+                      List<String> characterIds, List<String> starshipIds, List<String> vehicleIds,
+                      List<String> speciesIds) {
 }

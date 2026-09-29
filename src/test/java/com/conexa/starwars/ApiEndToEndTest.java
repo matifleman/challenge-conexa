@@ -115,6 +115,7 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content[0].episodeId").value(4))
                 .andExpect(jsonPath("$.content[0].releaseDate").value("1977-05-25"))
                 .andExpect(jsonPath("$.content[0].characterIds.length()").value(18))
+                .andExpect(jsonPath("$.content[0].speciesIds.length()").value(5))
                 .andExpect(jsonPath("$.content[0].species").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
@@ -145,6 +146,37 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content[0].name").value("X-34 landspeeder"))
                 .andExpect(jsonPath("$.totalElements").value(8))
                 .andExpect(jsonPath("$.totalPages").value(2));
+    }
+
+    @Test
+    void listsSpeciesPaginatedBySwapi() throws Exception {
+        swapi.expect(requestTo(SWAPI + "/species?page=1&limit=2&expanded=true"))
+                .andRespond(withSuccess(fixture("species-page.json"), MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(get("/api/v1/species").param("size", "2").header(HttpHeaders.AUTHORIZATION, bearerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].name").value("Human"))
+                .andExpect(jsonPath("$.content[1].name").value("Droid"))
+                .andExpect(jsonPath("$.content[1].characterIds[0]").value("2"))
+                .andExpect(jsonPath("$.content[1].homeworld").doesNotExist())
+                .andExpect(jsonPath("$.totalElements").value(37))
+                .andExpect(jsonPath("$.totalPages").value(19));
+    }
+
+    @Test
+    void returnsSpeciesDetail() throws Exception {
+        swapi.expect(requestTo(SWAPI + "/species/3"))
+                .andRespond(withSuccess(fixture("species.json"), MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(get("/api/v1/species/3").header(HttpHeaders.AUTHORIZATION, bearerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("3"))
+                .andExpect(jsonPath("$.name").value("Wookie"))
+                .andExpect(jsonPath("$.hairColors").value("black, brown"))
+                .andExpect(jsonPath("$.averageLifespan").value("400"))
+                .andExpect(jsonPath("$.characterIds.length()").value(2))
+                .andExpect(jsonPath("$.characterIds[0]").value("13"))
+                .andExpect(jsonPath("$.people").doesNotExist());
     }
 
     @Test

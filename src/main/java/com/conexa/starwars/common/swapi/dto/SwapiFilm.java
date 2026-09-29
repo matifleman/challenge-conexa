@@ -15,5 +15,5 @@ import tools.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record SwapiFilm(String title, int episodeId, String director, String producer,
         LocalDate releaseDate, String openingCrawl,
-        List<String> characters, List<String> starships, List<String> vehicles) {
+        List<String> characters, List<String> starships, List<String> vehicles, List<String> species) {
 }

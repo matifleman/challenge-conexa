@@ -103,6 +103,7 @@ class FilmsServiceTest {
         assertThat(result.characterIds()).containsExactly("1", "2");
         assertThat(result.starshipIds()).containsExactly("2");
         assertThat(result.vehicleIds()).containsExactly("4");
+        assertThat(result.speciesIds()).containsExactly("1", "2");
     }
 
     @Test
@@ -120,6 +121,7 @@ class FilmsServiceTest {
                 LocalDate.of(1977, 5, 25), "It is a period of civil war.",
                 List.of("https://www.swapi.tech/api/people/1", "https://www.swapi.tech/api/people/2"),
                 List.of("https://www.swapi.tech/api/starships/2"),
-                List.of("https://www.swapi.tech/api/vehicles/4")));
+                List.of("https://www.swapi.tech/api/vehicles/4"),
+                List.of("https://www.swapi.tech/api/species/1", "https://www.swapi.tech/api/species/2")));
     }
 }
