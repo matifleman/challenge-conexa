@@ -27,6 +27,7 @@ public class PersonMapper {
                 person.gender(),
                 SwapiUrls.idsOf(person.films()),
                 SwapiUrls.idsOf(person.starships()),
-                SwapiUrls.idsOf(person.vehicles()));
+                SwapiUrls.idsOf(person.vehicles()),
+                SwapiUrls.idOf(person.homeworld()));
     }
 }

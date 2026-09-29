@@ -80,6 +80,7 @@ class SwapiFilmsClientTest {
         assertThat(film.starships()).hasSize(8).startsWith("https://www.swapi.tech/api/starships/2");
         assertThat(film.vehicles()).hasSize(4).startsWith("https://www.swapi.tech/api/vehicles/4");
         assertThat(film.species()).hasSize(5).startsWith("https://www.swapi.tech/api/species/1");
+        assertThat(film.planets()).hasSize(3).startsWith("https://www.swapi.tech/api/planets/1");
         server.verify();
     }
 

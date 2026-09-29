@@ -27,4 +27,28 @@ class SwapiUrlsTest {
     void idsOfReturnsEmptyListWhenSwapiOmitsTheRelation() {
         assertThat(SwapiUrls.idsOf(null)).isEmpty();
     }
+
+    @Test
+    void idsOfSkipsUrlsThatPointToNoResource() {
+        List<String> ids = SwapiUrls.idsOf(List.of(
+                "https://www.swapi.tech/api/planets/null",
+                "https://www.swapi.tech/api/planets/1"));
+
+        assertThat(ids).containsExactly("1");
+    }
+
+    @Test
+    void idOfExtractsTheLastPathSegment() {
+        assertThat(SwapiUrls.idOf("https://www.swapi.tech/api/planets/14")).isEqualTo("14");
+    }
+
+    @Test
+    void idOfReturnsNullWhenSwapiOmitsTheRelation() {
+        assertThat(SwapiUrls.idOf(null)).isNull();
+    }
+
+    @Test
+    void idOfReturnsNullWhenTheUrlPointsToNoResource() {
+        assertThat(SwapiUrls.idOf("https://www.swapi.tech/api/planets/null")).isNull();
+    }
 }

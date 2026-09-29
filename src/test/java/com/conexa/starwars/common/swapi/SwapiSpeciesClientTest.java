@@ -47,6 +47,8 @@ class SwapiSpeciesClientTest {
         assertThat(response.results())
                 .extracting(resource -> resource.properties().name())
                 .containsExactly("Human", "Droid");
+        assertThat(response.results().get(1).properties().homeworld())
+                .isEqualTo("https://www.swapi.tech/api/planets/null");
         server.verify();
     }
 
@@ -81,7 +83,8 @@ class SwapiSpeciesClientTest {
                 "blue, green, yellow, brown, golden, red",
                 "400",
                 "Shyriiwook",
-                List.of("https://www.swapi.tech/api/people/13", "https://www.swapi.tech/api/people/80")));
+                List.of("https://www.swapi.tech/api/people/13", "https://www.swapi.tech/api/people/80"),
+                "https://www.swapi.tech/api/planets/14"));
         server.verify();
     }
 

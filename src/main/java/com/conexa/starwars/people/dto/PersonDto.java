@@ -7,8 +7,10 @@ import java.util.List;
  * Physical attributes are strings because the source may report them as "unknown".
  * Relations are ids of this API, resolvable through the endpoint of the related resource
  * (e.g. {@code filmIds} through {@code /api/v1/films/{id}}).
+ * {@code homeworldId} is {@code null} when the source reports no homeworld.
  */
 public record PersonDto(String id, String name, String height, String mass, String hairColor,
                         String skinColor, String eyeColor, String birthYear, String gender,
-                        List<String> filmIds, List<String> starshipIds, List<String> vehicleIds) {
+                        List<String> filmIds, List<String> starshipIds, List<String> vehicleIds,
+                        String homeworldId) {
 }

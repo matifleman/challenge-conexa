@@ -77,7 +77,8 @@ class SpeciesControllerTest {
                 .andExpect(jsonPath("$.id").value("3"))
                 .andExpect(jsonPath("$.name").value("Wookie"))
                 .andExpect(jsonPath("$.language").value("Shyriiwook"))
-                .andExpect(jsonPath("$.characterIds[1]").value("80"));
+                .andExpect(jsonPath("$.characterIds[1]").value("80"))
+                .andExpect(jsonPath("$.homeworldId").value("14"));
     }
 
     @Test
@@ -98,6 +99,6 @@ class SpeciesControllerTest {
 
     private static SpeciesDto wookie() {
         return new SpeciesDto("3", "Wookie", "mammal", "sentient", "210", "gray", "black, brown",
-                "blue, green, yellow, brown, golden, red", "400", "Shyriiwook", List.of("13", "80"));
+                "blue, green, yellow, brown, golden, red", "400", "Shyriiwook", List.of("13", "80"), "14");
     }
 }

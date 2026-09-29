@@ -13,5 +13,5 @@ import tools.jackson.databind.annotation.JsonNaming;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record SwapiPerson(String name, String height, String mass, String hairColor,
         String skinColor, String eyeColor, String birthYear, String gender,
-        List<String> films, List<String> starships, List<String> vehicles) {
+        List<String> films, List<String> starships, List<String> vehicles, String homeworld) {
 }

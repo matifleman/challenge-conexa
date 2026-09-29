@@ -76,7 +76,8 @@ class SwapiPeopleClientTest {
                 List.of("https://www.swapi.tech/api/films/1", "https://www.swapi.tech/api/films/2",
                         "https://www.swapi.tech/api/films/3", "https://www.swapi.tech/api/films/6"),
                 List.of("https://www.swapi.tech/api/starships/12", "https://www.swapi.tech/api/starships/22"),
-                List.of("https://www.swapi.tech/api/vehicles/14", "https://www.swapi.tech/api/vehicles/30")));
+                List.of("https://www.swapi.tech/api/vehicles/14", "https://www.swapi.tech/api/vehicles/30"),
+                "https://www.swapi.tech/api/planets/1"));
         server.verify();
     }
 
