@@ -74,7 +74,10 @@ class PeopleControllerTest {
         mockMvc.perform(get("/api/v1/people/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.name").value("Luke Skywalker"));
+                .andExpect(jsonPath("$.name").value("Luke Skywalker"))
+                .andExpect(jsonPath("$.filmIds[3]").value("6"))
+                .andExpect(jsonPath("$.starshipIds[0]").value("12"))
+                .andExpect(jsonPath("$.vehicleIds[1]").value("30"));
     }
 
     @Test
@@ -94,6 +97,7 @@ class PeopleControllerTest {
     }
 
     private static PersonDto luke() {
-        return new PersonDto("1", "Luke Skywalker", "172", "77", "blond", "fair", "blue", "19BBY", "male");
+        return new PersonDto("1", "Luke Skywalker", "172", "77", "blond", "fair", "blue", "19BBY", "male",
+                List.of("1", "2", "3", "6"), List.of("12", "22"), List.of("14", "30"));
     }
 }

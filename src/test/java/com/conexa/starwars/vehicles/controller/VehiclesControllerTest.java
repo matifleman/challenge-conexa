@@ -75,7 +75,9 @@ class VehiclesControllerTest {
         mockMvc.perform(get("/api/v1/vehicles/4"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("4"))
-                .andExpect(jsonPath("$.name").value("Sand Crawler"));
+                .andExpect(jsonPath("$.name").value("Sand Crawler"))
+                .andExpect(jsonPath("$.pilotIds.length()").value(0))
+                .andExpect(jsonPath("$.filmIds[1]").value("5"));
     }
 
     @Test
@@ -96,6 +98,7 @@ class VehiclesControllerTest {
 
     private static VehicleDto sandCrawler() {
         return new VehicleDto("4", "Sand Crawler", "Digger Crawler", "Corellia Mining Corporation", "wheeled",
-                "150000", "36.8", "46", "30", "50000", "2 months", "30");
+                "150000", "36.8", "46", "30", "50000", "2 months", "30",
+                List.of(), List.of("1", "5"));
     }
 }

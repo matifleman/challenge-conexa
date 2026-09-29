@@ -102,7 +102,8 @@ class StarshipsServiceTest {
 
         assertThat(result).isEqualTo(new StarshipDto("9", "Death Star", "DS-1 Orbital Battle Station",
                 "Imperial Department of Military Research", "Deep Space Mobile Battlestation", "1000000000000",
-                "120000", "342,953", "843,342", "1000000000000", "3 years", "n/a", "4.0", "10"));
+                "120000", "342,953", "843,342", "1000000000000", "3 years", "n/a", "4.0", "10",
+                List.of("13"), List.of("1")));
     }
 
     @Test
@@ -118,6 +119,7 @@ class StarshipsServiceTest {
     private static SwapiResource<SwapiStarship> starship(String uid, String name) {
         return new SwapiResource<>(uid, new SwapiStarship(name, "DS-1 Orbital Battle Station",
                 "Imperial Department of Military Research", "Deep Space Mobile Battlestation", "1000000000000",
-                "120000", "342,953", "843,342", "1000000000000", "3 years", "n/a", "4.0", "10"));
+                "120000", "342,953", "843,342", "1000000000000", "3 years", "n/a", "4.0", "10",
+                List.of("https://www.swapi.tech/api/people/13"), List.of("https://www.swapi.tech/api/films/1")));
     }
 }

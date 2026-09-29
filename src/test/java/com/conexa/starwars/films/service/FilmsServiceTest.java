@@ -100,6 +100,9 @@ class FilmsServiceTest {
         assertThat(result.title()).isEqualTo("A New Hope");
         assertThat(result.episodeId()).isEqualTo(4);
         assertThat(result.releaseDate()).isEqualTo(LocalDate.of(1977, 5, 25));
+        assertThat(result.characterIds()).containsExactly("1", "2");
+        assertThat(result.starshipIds()).containsExactly("2");
+        assertThat(result.vehicleIds()).containsExactly("4");
     }
 
     @Test
@@ -114,6 +117,9 @@ class FilmsServiceTest {
 
     private static SwapiResource<SwapiFilm> film(String uid, String title, int episodeId) {
         return new SwapiResource<>(uid, new SwapiFilm(title, episodeId, "George Lucas", "Gary Kurtz",
-                LocalDate.of(1977, 5, 25), "It is a period of civil war."));
+                LocalDate.of(1977, 5, 25), "It is a period of civil war.",
+                List.of("https://www.swapi.tech/api/people/1", "https://www.swapi.tech/api/people/2"),
+                List.of("https://www.swapi.tech/api/starships/2"),
+                List.of("https://www.swapi.tech/api/vehicles/4")));
     }
 }

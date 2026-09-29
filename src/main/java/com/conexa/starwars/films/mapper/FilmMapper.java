@@ -1,5 +1,6 @@
 package com.conexa.starwars.films.mapper;
 
+import com.conexa.starwars.common.swapi.SwapiUrls;
 import com.conexa.starwars.common.swapi.dto.SwapiFilm;
 import com.conexa.starwars.common.swapi.dto.SwapiResource;
 import com.conexa.starwars.films.dto.FilmDto;
@@ -21,6 +22,9 @@ public class FilmMapper {
                 film.director(),
                 film.producer(),
                 film.releaseDate(),
-                film.openingCrawl());
+                film.openingCrawl(),
+                SwapiUrls.idsOf(film.characters()),
+                SwapiUrls.idsOf(film.starships()),
+                SwapiUrls.idsOf(film.vehicles()));
     }
 }

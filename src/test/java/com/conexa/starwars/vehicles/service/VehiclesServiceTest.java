@@ -102,7 +102,7 @@ class VehiclesServiceTest {
 
         assertThat(result).isEqualTo(new VehicleDto("4", "Sand Crawler", "Digger Crawler",
                 "Corellia Mining Corporation", "wheeled", "150000", "36.8", "46", "30", "50000",
-                "2 months", "30"));
+                "2 months", "30", List.of("11"), List.of("1", "5")));
     }
 
     @Test
@@ -117,6 +117,7 @@ class VehiclesServiceTest {
 
     private static SwapiResource<SwapiVehicle> vehicle(String uid, String name) {
         return new SwapiResource<>(uid, new SwapiVehicle(name, "Digger Crawler", "Corellia Mining Corporation",
-                "wheeled", "150000", "36.8", "46", "30", "50000", "2 months", "30"));
+                "wheeled", "150000", "36.8", "46", "30", "50000", "2 months", "30",
+                List.of("https://www.swapi.tech/api/people/11"), List.of("https://www.swapi.tech/api/films/1", "https://www.swapi.tech/api/films/5")));
     }
 }

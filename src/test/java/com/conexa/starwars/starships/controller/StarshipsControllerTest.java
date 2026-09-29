@@ -75,7 +75,9 @@ class StarshipsControllerTest {
         mockMvc.perform(get("/api/v1/starships/9"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("9"))
-                .andExpect(jsonPath("$.name").value("Death Star"));
+                .andExpect(jsonPath("$.name").value("Death Star"))
+                .andExpect(jsonPath("$.pilotIds.length()").value(0))
+                .andExpect(jsonPath("$.filmIds[0]").value("1"));
     }
 
     @Test
@@ -97,6 +99,7 @@ class StarshipsControllerTest {
     private static StarshipDto deathStar() {
         return new StarshipDto("9", "Death Star", "DS-1 Orbital Battle Station",
                 "Imperial Department of Military Research", "Deep Space Mobile Battlestation", "1000000000000",
-                "120000", "342,953", "843,342", "1000000000000", "3 years", "n/a", "4.0", "10");
+                "120000", "342,953", "843,342", "1000000000000", "3 years", "n/a", "4.0", "10",
+                List.of(), List.of("1"));
     }
 }

@@ -1,5 +1,6 @@
 package com.conexa.starwars.people.mapper;
 
+import com.conexa.starwars.common.swapi.SwapiUrls;
 import com.conexa.starwars.common.swapi.dto.SwapiPerson;
 import com.conexa.starwars.common.swapi.dto.SwapiResource;
 import com.conexa.starwars.people.dto.PersonDto;
@@ -23,6 +24,9 @@ public class PersonMapper {
                 person.skinColor(),
                 person.eyeColor(),
                 person.birthYear(),
-                person.gender());
+                person.gender(),
+                SwapiUrls.idsOf(person.films()),
+                SwapiUrls.idsOf(person.starships()),
+                SwapiUrls.idsOf(person.vehicles()));
     }
 }

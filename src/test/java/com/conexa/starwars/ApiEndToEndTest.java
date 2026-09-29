@@ -97,6 +97,9 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content.length()").value(2))
                 .andExpect(jsonPath("$.content[0].name").value("Luke Skywalker"))
                 .andExpect(jsonPath("$.content[0].hairColor").value("blond"))
+                .andExpect(jsonPath("$.content[0].filmIds.length()").value(4))
+                .andExpect(jsonPath("$.content[0].filmIds[0]").value("1"))
+                .andExpect(jsonPath("$.content[0].homeworld").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(82))
                 .andExpect(jsonPath("$.totalPages").value(41));
     }
@@ -111,6 +114,8 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content[0].title").value("A New Hope"))
                 .andExpect(jsonPath("$.content[0].episodeId").value(4))
                 .andExpect(jsonPath("$.content[0].releaseDate").value("1977-05-25"))
+                .andExpect(jsonPath("$.content[0].characterIds.length()").value(18))
+                .andExpect(jsonPath("$.content[0].species").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
 
@@ -123,7 +128,9 @@ class ApiEndToEndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("9"))
                 .andExpect(jsonPath("$.name").value("Death Star"))
-                .andExpect(jsonPath("$.mglt").value("10"));
+                .andExpect(jsonPath("$.mglt").value("10"))
+                .andExpect(jsonPath("$.pilotIds").isEmpty())
+                .andExpect(jsonPath("$.filmIds[0]").value("1"));
     }
 
     @Test
