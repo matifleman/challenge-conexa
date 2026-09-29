@@ -27,12 +27,14 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0019](0019-deploy-en-render-y-neon.md) | Deploy en Render con PostgreSQL en Neon | Aceptada |
 | [0020](0020-cache-de-respuestas-de-swapi.md) | Caché de respuestas de SWAPI con Caffeine | Aceptada |
 | [0021](0021-limite-de-intentos-de-login.md) | Límite de intentos de login | Aceptada |
+| [0022](0022-relaciones-como-ids-propios.md) | Relaciones como ids propios | Aceptada |
 
 ## Mejoras futuras
 
 Mejoras identificadas durante el desarrollo y documentadas en los ADR correspondientes:
 
-- **Relaciones como ids propios** (ADR 0009): exponer las relaciones entre recursos como ids navegables dentro de la API, sin llamadas extra a SWAPI.
+- **Expansión opt-in de relaciones** (ADR 0022): embeber los recursos relacionados bajo demanda (`?include=`), solo en el detalle.
+- **Planets y species** (ADR 0022): exponer esos recursos y, con ellos, sus relaciones.
 - **Helpers compartidos entre services** (ADR 0010): extraer la paginación desde SWAPI y la traducción del `404` a funciones reutilizables.
 - **Roles o permisos** (ADR 0014): si aparecen operaciones que no deban estar disponibles para todos los usuarios.
 - **Claves RSA por configuración** (ADR 0017): para que los tokens sobrevivan a los reinicios y funcionen con varias instancias.
