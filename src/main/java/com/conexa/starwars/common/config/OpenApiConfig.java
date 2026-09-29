@@ -38,7 +38,8 @@ public class OpenApiConfig {
                         .title("Star Wars API")
                         .version("v1")
                         .description("Paginated listing and lookup of Star Wars people, films, starships, "
-                                + "vehicles and species, backed by SWAPI. Errors follow RFC 9457 (ProblemDetail). "
+                                + "vehicles, species and planets, backed by SWAPI. "
+                                + "Errors follow RFC 9457 (ProblemDetail). "
                                 + "Register, log in and use the access token with the Authorize button."))
                 .externalDocs(new ExternalDocumentation()
                         .description("SWAPI documentation")
