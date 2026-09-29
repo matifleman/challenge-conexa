@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/matifleman/challenge-conexa/actions/workflows/ci.yml/badge.svg)](https://github.com/matifleman/challenge-conexa/actions/workflows/ci.yml)
 
-API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.tech/documentation) para listar **People**, **Films**, **Starships**, **Vehicles** y **Species** de forma paginada, con filtrado por ID o por nombre. El acceso a los listados requiere autenticación con JWT.
+API REST en Java 21 + Spring Boot que se integra con [SWAPI](https://www.swapi.tech/documentation) para listar **People**, **Films**, **Starships**, **Vehicles**, **Species** y **Planets** de forma paginada, con filtrado por ID o por nombre. El acceso a los listados requiere autenticación con JWT.
 
 > 🚧 Proyecto en desarrollo. Este README se completa a medida que avanzan las funcionalidades.
 
@@ -194,7 +194,8 @@ Respuesta de un listado:
       "gender": "male",
       "filmIds": ["1", "2", "3", "6"],
       "starshipIds": ["12", "22"],
-      "vehicleIds": ["14", "30"]
+      "vehicleIds": ["14", "30"],
+      "homeworldId": "1"
     }
   ],
   "page": 1,
@@ -250,7 +251,8 @@ Respuesta de un film:
   "characterIds": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", "13", "14", "15", "16", "18", "19", "81"],
   "starshipIds": ["2", "3", "5", "9", "10", "11", "12", "13"],
   "vehicleIds": ["4", "6", "7", "8"],
-  "speciesIds": ["1", "2", "3", "4", "5"]
+  "speciesIds": ["1", "2", "3", "4", "5"],
+  "planetIds": ["1", "2", "3"]
 }
 ```
 
@@ -369,35 +371,78 @@ Respuesta de una especie:
   "eyeColors": "blue, green, yellow, brown, golden, red",
   "averageLifespan": "400",
   "language": "Shyriiwook",
-  "characterIds": ["13", "80"]
+  "characterIds": ["13", "80"],
+  "homeworldId": "14"
 }
 ```
 
 - Los atributos se exponen como texto, tal como los informa SWAPI. Los colores son listas separadas por comas dentro de un mismo texto, y hay valores como `"n/a"` o `"indefinite"`.
 - `characterIds` refleja los datos de SWAPI, que no asigna especie a todos los personajes. Por ejemplo, Human lista solo cuatro personajes y Luke Skywalker no figura en ninguna especie.
+- `homeworldId` es `null` cuando SWAPI no informa un planeta de origen (por ejemplo, en Droid).
+
+### Planets
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/v1/planets` | Listado paginado, con filtro opcional por nombre |
+| `GET` | `/api/v1/planets/{id}` | Detalle de un planeta |
+
+Acepta los mismos parámetros que People (`page`, `size` y `name`) y tiene el mismo comportamiento.
+
+**Ejemplos**
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/planets?size=2"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/planets?name=tat"
+curl -H "Authorization: Bearer $TOKEN" "http://localhost:8080/api/v1/planets/1"
+```
+
+Respuesta de un planeta:
+
+```json
+{
+  "id": "1",
+  "name": "Tatooine",
+  "diameter": "10465",
+  "rotationPeriod": "23",
+  "orbitalPeriod": "304",
+  "gravity": "1 standard",
+  "population": "200000",
+  "climate": "arid",
+  "terrain": "desert",
+  "surfaceWater": "1"
+}
+```
+
+- Los atributos se exponen como texto, tal como los informa SWAPI: pueden incluir unidades (`"1 standard"`), valores como `"unknown"` o `"N/A"`, y listas separadas por comas en `climate` y `terrain`.
+- Un planeta no incluye relaciones: SWAPI no informa sus residentes ni sus films, aunque su documentación los mencione. Para navegar hacia un planeta se usa `homeworldId` (People, Species) o `planetIds` (Films).
+- SWAPI incluye un planeta llamado `"unknown"` (id `28`), que se expone tal cual.
 
 ### Relaciones entre recursos
 
-Cada recurso incluye sus relaciones como listas de ids de esta API. Cada id se consulta en el endpoint del recurso relacionado:
+Cada recurso incluye sus relaciones como ids de esta API. Cada id se consulta en el endpoint del recurso relacionado:
 
 | Recurso | Campo | Endpoint del id |
 |---|---|---|
 | People | `filmIds` | `/api/v1/films/{id}` |
 | People | `starshipIds` | `/api/v1/starships/{id}` |
 | People | `vehicleIds` | `/api/v1/vehicles/{id}` |
+| People | `homeworldId` | `/api/v1/planets/{id}` |
 | Films | `characterIds` | `/api/v1/people/{id}` |
 | Films | `starshipIds` | `/api/v1/starships/{id}` |
 | Films | `vehicleIds` | `/api/v1/vehicles/{id}` |
 | Films | `speciesIds` | `/api/v1/species/{id}` |
+| Films | `planetIds` | `/api/v1/planets/{id}` |
 | Starships, Vehicles | `pilotIds` | `/api/v1/people/{id}` |
 | Starships, Vehicles | `filmIds` | `/api/v1/films/{id}` |
 | Species | `characterIds` | `/api/v1/people/{id}` |
+| Species | `homeworldId` | `/api/v1/planets/{id}` |
 
 Por ejemplo, para ver los personajes de un film se consulta `/api/v1/films/1` y luego `/api/v1/people/{id}` por cada id de `characterIds`.
 
-- Una relación sin elementos se devuelve como lista vacía (`[]`), nunca como `null`.
-- Las relaciones se exponen en el sentido en que las informa SWAPI: una especie lista sus personajes, pero un personaje no informa su especie; un film lista sus especies, pero una especie no informa sus films ([ADR 0023](docs/adr/0023-recurso-species.md)).
-- No se incluyen planetas (`homeworld`, `planets`), porque la API no expone ese recurso.
+- Una relación de varios valores sin elementos se devuelve como lista vacía (`[]`), nunca como `null`.
+- Una relación de un solo valor (`homeworldId`) sin dato se devuelve como `null`; el campo siempre está presente ([ADR 0024](docs/adr/0024-recurso-planets.md)).
+- Las relaciones se exponen en el sentido en que las informa SWAPI: una especie lista sus personajes, pero un personaje no informa su especie; un film lista sus especies, pero una especie no informa sus films ([ADR 0023](docs/adr/0023-recurso-species.md)). Del mismo modo, un planeta no informa sus residentes ni sus films.
 - Las relaciones no se resuelven en la misma respuesta: cada una requeriría una llamada extra a SWAPI. El motivo está en el [ADR 0022](docs/adr/0022-relaciones-como-ids-propios.md).
 
 ## Errores
@@ -456,6 +501,7 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Listado paginado y filtrado de Starships | ✅ Listo |
 | Listado paginado y filtrado de Vehicles | ✅ Listo |
 | Listado paginado y filtrado de Species | ✅ Listo |
+| Listado paginado y filtrado de Planets | ✅ Listo |
 | Manejo de errores | ✅ Listo |
 | Documentación de la API (Swagger / OpenAPI) | ✅ Listo |
 | Usuarios en PostgreSQL y autenticación con JWT | ✅ Listo |
