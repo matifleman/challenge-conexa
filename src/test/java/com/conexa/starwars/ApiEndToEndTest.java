@@ -115,6 +115,7 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content[0].episodeId").value(4))
                 .andExpect(jsonPath("$.content[0].releaseDate").value("1977-05-25"))
                 .andExpect(jsonPath("$.content[0].characterIds.length()").value(18))
+                .andExpect(jsonPath("$.content[0].speciesIds.length()").value(5))
                 .andExpect(jsonPath("$.content[0].species").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
