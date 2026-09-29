@@ -191,7 +191,10 @@ Respuesta de un listado:
       "skinColor": "fair",
       "eyeColor": "blue",
       "birthYear": "19BBY",
-      "gender": "male"
+      "gender": "male",
+      "filmIds": ["1", "2", "3", "6"],
+      "starshipIds": ["12", "22"],
+      "vehicleIds": ["14", "30"]
     }
   ],
   "page": 1,
@@ -243,7 +246,10 @@ Respuesta de un film:
   "director": "George Lucas",
   "producer": "Gary Kurtz, Rick McCallum",
   "releaseDate": "1977-05-25",
-  "openingCrawl": "It is a period of civil war. ..."
+  "openingCrawl": "It is a period of civil war. ...",
+  "characterIds": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "12", "13", "14", "15", "16", "18", "19", "81"],
+  "starshipIds": ["2", "3", "5", "9", "10", "11", "12", "13"],
+  "vehicleIds": ["4", "6", "7", "8"]
 }
 ```
 
@@ -283,7 +289,9 @@ Respuesta de una nave:
   "consumables": "3 years",
   "maxAtmospheringSpeed": "n/a",
   "hyperdriveRating": "4.0",
-  "mglt": "10"
+  "mglt": "10",
+  "pilotIds": [],
+  "filmIds": ["1"]
 }
 ```
 
@@ -321,11 +329,34 @@ Respuesta de un vehículo:
   "passengers": "30",
   "cargoCapacity": "50000",
   "consumables": "2 months",
-  "maxAtmospheringSpeed": "30"
+  "maxAtmospheringSpeed": "30",
+  "pilotIds": [],
+  "filmIds": ["1", "5"]
 }
 ```
 
 Igual que en Starships, los atributos se exponen como texto, tal como los informa SWAPI.
+
+### Relaciones entre recursos
+
+Cada recurso incluye sus relaciones como listas de ids de esta API. Cada id se consulta en el endpoint del recurso relacionado:
+
+| Recurso | Campo | Endpoint del id |
+|---|---|---|
+| People | `filmIds` | `/api/v1/films/{id}` |
+| People | `starshipIds` | `/api/v1/starships/{id}` |
+| People | `vehicleIds` | `/api/v1/vehicles/{id}` |
+| Films | `characterIds` | `/api/v1/people/{id}` |
+| Films | `starshipIds` | `/api/v1/starships/{id}` |
+| Films | `vehicleIds` | `/api/v1/vehicles/{id}` |
+| Starships, Vehicles | `pilotIds` | `/api/v1/people/{id}` |
+| Starships, Vehicles | `filmIds` | `/api/v1/films/{id}` |
+
+Por ejemplo, para ver los personajes de un film se consulta `/api/v1/films/1` y luego `/api/v1/people/{id}` por cada id de `characterIds`.
+
+- Una relación sin elementos se devuelve como lista vacía (`[]`), nunca como `null`.
+- No se incluyen planetas ni especies, porque la API no expone esos recursos.
+- Las relaciones no se resuelven en la misma respuesta: cada una requeriría una llamada extra a SWAPI. El motivo está en el [ADR 0022](docs/adr/0022-relaciones-como-ids-propios.md).
 
 ## Errores
 
@@ -385,3 +416,4 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Manejo de errores | ✅ Listo |
 | Documentación de la API (Swagger / OpenAPI) | ✅ Listo |
 | Usuarios en PostgreSQL y autenticación con JWT | ✅ Listo |
+| Relaciones entre recursos como ids | ✅ Listo |
