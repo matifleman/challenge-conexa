@@ -24,6 +24,7 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -99,6 +100,7 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content[0].hairColor").value("blond"))
                 .andExpect(jsonPath("$.content[0].filmIds.length()").value(4))
                 .andExpect(jsonPath("$.content[0].filmIds[0]").value("1"))
+                .andExpect(jsonPath("$.content[0].homeworldId").value("1"))
                 .andExpect(jsonPath("$.content[0].homeworld").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(82))
                 .andExpect(jsonPath("$.totalPages").value(41));
@@ -116,6 +118,8 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.content[0].releaseDate").value("1977-05-25"))
                 .andExpect(jsonPath("$.content[0].characterIds.length()").value(18))
                 .andExpect(jsonPath("$.content[0].speciesIds.length()").value(5))
+                .andExpect(jsonPath("$.content[0].planetIds.length()").value(3))
+                .andExpect(jsonPath("$.content[0].planets").doesNotExist())
                 .andExpect(jsonPath("$.content[0].species").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(1));
     }
@@ -157,7 +161,11 @@ class ApiEndToEndTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].name").value("Human"))
                 .andExpect(jsonPath("$.content[1].name").value("Droid"))
+                .andExpect(jsonPath("$.content[0].homeworldId").value("9"))
                 .andExpect(jsonPath("$.content[1].characterIds[0]").value("2"))
+                // SWAPI sends ".../planets/null" as the droids' homeworld: the field is present and null
+                .andExpect(jsonPath("$.content[1].homeworldId").hasJsonPath())
+                .andExpect(jsonPath("$.content[1].homeworldId").value(nullValue()))
                 .andExpect(jsonPath("$.content[1].homeworld").doesNotExist())
                 .andExpect(jsonPath("$.totalElements").value(37))
                 .andExpect(jsonPath("$.totalPages").value(19));
@@ -177,6 +185,33 @@ class ApiEndToEndTest {
                 .andExpect(jsonPath("$.characterIds.length()").value(2))
                 .andExpect(jsonPath("$.characterIds[0]").value("13"))
                 .andExpect(jsonPath("$.people").doesNotExist());
+    }
+
+    @Test
+    void filtersPlanetsByName() throws Exception {
+        swapi.expect(requestTo(SWAPI + "/planets?name=tat"))
+                .andRespond(withSuccess(fixture("planets-search.json"), MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(get("/api/v1/planets").param("name", "tat").header(HttpHeaders.AUTHORIZATION, bearerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id").value("1"))
+                .andExpect(jsonPath("$.content[0].name").value("Tatooine"))
+                .andExpect(jsonPath("$.totalElements").value(1));
+    }
+
+    @Test
+    void returnsPlanetDetail() throws Exception {
+        swapi.expect(requestTo(SWAPI + "/planets/1"))
+                .andRespond(withSuccess(fixture("planet.json"), MediaType.APPLICATION_JSON));
+
+        mockMvc.perform(get("/api/v1/planets/1").header(HttpHeaders.AUTHORIZATION, bearerToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.name").value("Tatooine"))
+                .andExpect(jsonPath("$.gravity").value("1 standard"))
+                .andExpect(jsonPath("$.surfaceWater").value("1"))
+                .andExpect(jsonPath("$.residents").doesNotExist())
+                .andExpect(jsonPath("$.url").doesNotExist());
     }
 
     @Test
