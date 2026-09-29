@@ -35,6 +35,7 @@ class OpenApiConfigTest {
                 .andExpect(jsonPath("$.paths", hasKey("/api/v1/starships")))
                 .andExpect(jsonPath("$.paths", hasKey("/api/v1/vehicles/{id}")))
                 .andExpect(jsonPath("$.paths", hasKey("/api/v1/species/{id}")))
+                .andExpect(jsonPath("$.paths", hasKey("/api/v1/planets/{id}")))
                 .andExpect(jsonPath("$.paths['/api/v1/people'].get.responses", hasKey("502")))
                 .andExpect(jsonPath("$.paths['/api/v1/people'].get.responses", hasKey("504")))
                 .andExpect(jsonPath("$.components.schemas", hasKey("ProblemDetail")));

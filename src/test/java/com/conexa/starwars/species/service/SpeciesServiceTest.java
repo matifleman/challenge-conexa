@@ -102,7 +102,19 @@ class SpeciesServiceTest {
 
         assertThat(result).isEqualTo(new SpeciesDto("3", "Wookie", "mammal", "sentient", "210", "gray",
                 "black, brown", "blue, green, yellow, brown, golden, red", "400", "Shyriiwook",
-                List.of("13", "80")));
+                List.of("13", "80"), "14"));
+    }
+
+    @Test
+    void findByIdMapsHomeworldThatPointsToNoPlanetToNull() {
+        when(swapiSpeciesClient.findById(2)).thenReturn(new SwapiItemResponse<>(new SwapiResource<>("2",
+                new SwapiSpecies("Droid", "artificial", "sentient", "n/a", "n/a", "n/a", "n/a", "indefinite", "n/a",
+                        List.of("https://www.swapi.tech/api/people/2"), "https://www.swapi.tech/api/planets/null"))));
+
+        SpeciesDto result = speciesService.findById(2);
+
+        assertThat(result.homeworldId()).isNull();
+        assertThat(result.characterIds()).containsExactly("2");
     }
 
     @Test
@@ -118,6 +130,7 @@ class SpeciesServiceTest {
     private static SwapiResource<SwapiSpecies> species(String uid, String name) {
         return new SwapiResource<>(uid, new SwapiSpecies(name, "mammal", "sentient", "210", "gray",
                 "black, brown", "blue, green, yellow, brown, golden, red", "400", "Shyriiwook",
-                List.of("https://www.swapi.tech/api/people/13", "https://www.swapi.tech/api/people/80")));
+                List.of("https://www.swapi.tech/api/people/13", "https://www.swapi.tech/api/people/80"),
+                "https://www.swapi.tech/api/planets/14"));
     }
 }

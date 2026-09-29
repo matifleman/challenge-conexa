@@ -104,6 +104,7 @@ class FilmsServiceTest {
         assertThat(result.starshipIds()).containsExactly("2");
         assertThat(result.vehicleIds()).containsExactly("4");
         assertThat(result.speciesIds()).containsExactly("1", "2");
+        assertThat(result.planetIds()).containsExactly("1", "2", "3");
     }
 
     @Test
@@ -122,6 +123,8 @@ class FilmsServiceTest {
                 List.of("https://www.swapi.tech/api/people/1", "https://www.swapi.tech/api/people/2"),
                 List.of("https://www.swapi.tech/api/starships/2"),
                 List.of("https://www.swapi.tech/api/vehicles/4"),
-                List.of("https://www.swapi.tech/api/species/1", "https://www.swapi.tech/api/species/2")));
+                List.of("https://www.swapi.tech/api/species/1", "https://www.swapi.tech/api/species/2"),
+                List.of("https://www.swapi.tech/api/planets/1", "https://www.swapi.tech/api/planets/2",
+                        "https://www.swapi.tech/api/planets/3")));
     }
 }

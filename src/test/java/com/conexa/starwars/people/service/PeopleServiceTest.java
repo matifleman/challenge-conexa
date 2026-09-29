@@ -106,6 +106,7 @@ class PeopleServiceTest {
         assertThat(result.filmIds()).containsExactly("1", "2");
         assertThat(result.starshipIds()).containsExactly("12");
         assertThat(result.vehicleIds()).containsExactly("14");
+        assertThat(result.homeworldId()).isEqualTo("1");
     }
 
     @Test
@@ -123,6 +124,7 @@ class PeopleServiceTest {
                 new SwapiPerson(name, "172", "77", "blond", "fair", "blue", "19BBY", "male",
                         List.of("https://www.swapi.tech/api/films/1", "https://www.swapi.tech/api/films/2"),
                         List.of("https://www.swapi.tech/api/starships/12"),
-                        List.of("https://www.swapi.tech/api/vehicles/14")));
+                        List.of("https://www.swapi.tech/api/vehicles/14"),
+                        "https://www.swapi.tech/api/planets/1"));
     }
 }

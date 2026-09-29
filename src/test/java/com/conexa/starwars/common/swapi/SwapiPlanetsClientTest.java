@@ -1,11 +1,9 @@
 package com.conexa.starwars.common.swapi;
 
-import java.util.List;
-
 import com.conexa.starwars.common.swapi.dto.SwapiItemResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiListResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiPageResponse;
-import com.conexa.starwars.common.swapi.dto.SwapiPerson;
+import com.conexa.starwars.common.swapi.dto.SwapiPlanet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.restclient.test.autoconfigure.RestClientTest;
@@ -26,64 +24,67 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @RestClientTest(properties = "swapi.base-url=https://swapi.test/api")
 @Import(SwapiClientConfig.class)
-class SwapiPeopleClientTest {
+class SwapiPlanetsClientTest {
 
     @Autowired
-    private SwapiPeopleClient client;
+    private SwapiPlanetsClient client;
 
     @Autowired
     private MockRestServiceServer server;
 
     @Test
     void findAllSendsPaginationParamsAndParsesPage() {
-        server.expect(requestTo("https://swapi.test/api/people?page=1&limit=2&expanded=true"))
+        server.expect(requestTo("https://swapi.test/api/planets?page=1&limit=2&expanded=true"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(fixture("people-page.json"), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(fixture("planets-page.json"), MediaType.APPLICATION_JSON));
 
-        SwapiPageResponse<SwapiPerson> response = client.findAll(1, 2, true);
+        SwapiPageResponse<SwapiPlanet> response = client.findAll(1, 2, true);
 
-        assertThat(response.totalRecords()).isEqualTo(82);
-        assertThat(response.totalPages()).isEqualTo(41);
-        assertThat(response.results()).hasSize(2);
-        assertThat(response.results().getFirst().uid()).isEqualTo("1");
-        assertThat(response.results().getFirst().properties().name()).isEqualTo("Luke Skywalker");
+        assertThat(response.totalRecords()).isEqualTo(60);
+        assertThat(response.totalPages()).isEqualTo(30);
+        assertThat(response.results())
+                .extracting(resource -> resource.properties().name())
+                .containsExactly("Tatooine", "Alderaan");
         server.verify();
     }
 
     @Test
     void findByNameSendsNameParamAndParsesResultList() {
-        server.expect(requestTo("https://swapi.test/api/people?name=sky"))
-                .andRespond(withSuccess(fixture("people-search.json"), MediaType.APPLICATION_JSON));
+        server.expect(requestTo("https://swapi.test/api/planets?name=tat"))
+                .andRespond(withSuccess(fixture("planets-search.json"), MediaType.APPLICATION_JSON));
 
-        SwapiListResponse<SwapiPerson> response = client.findByName("sky");
+        SwapiListResponse<SwapiPlanet> response = client.findByName("tat");
 
         assertThat(response.result())
                 .extracting(resource -> resource.properties().name())
-                .containsExactly("Luke Skywalker", "Anakin Skywalker", "Shmi Skywalker");
+                .containsExactly("Tatooine");
         server.verify();
     }
 
     @Test
-    void findByIdParsesAllPersonAttributes() {
-        server.expect(requestTo("https://swapi.test/api/people/1"))
-                .andRespond(withSuccess(fixture("person.json"), MediaType.APPLICATION_JSON));
+    void findByIdParsesAllPlanetAttributes() {
+        server.expect(requestTo("https://swapi.test/api/planets/1"))
+                .andRespond(withSuccess(fixture("planet.json"), MediaType.APPLICATION_JSON));
 
-        SwapiItemResponse<SwapiPerson> response = client.findById(1);
+        SwapiItemResponse<SwapiPlanet> response = client.findById(1);
 
         assertThat(response.result().uid()).isEqualTo("1");
-        assertThat(response.result().properties()).isEqualTo(new SwapiPerson(
-                "Luke Skywalker", "172", "77", "blond", "fair", "blue", "19BBY", "male",
-                List.of("https://www.swapi.tech/api/films/1", "https://www.swapi.tech/api/films/2",
-                        "https://www.swapi.tech/api/films/3", "https://www.swapi.tech/api/films/6"),
-                List.of("https://www.swapi.tech/api/starships/12", "https://www.swapi.tech/api/starships/22"),
-                List.of("https://www.swapi.tech/api/vehicles/14", "https://www.swapi.tech/api/vehicles/30"),
-                "https://www.swapi.tech/api/planets/1"));
+        assertThat(response.result().properties()).isEqualTo(new SwapiPlanet(
+                "Tatooine",
+                "10465",
+                "23",
+                "304",
+                "1 standard",
+                "200000",
+                "arid",
+                "desert",
+                "1"));
         server.verify();
     }
 
     @Test
     void findByIdThrowsNotFoundWhenSwapiReturns404() {
-        server.expect(requestTo("https://swapi.test/api/people/999"))
+        server.expect(requestTo("https://swapi.test/api/planets/999"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         assertThatThrownBy(() -> client.findById(999))

@@ -26,6 +26,7 @@ public class FilmMapper {
                 SwapiUrls.idsOf(film.characters()),
                 SwapiUrls.idsOf(film.starships()),
                 SwapiUrls.idsOf(film.vehicles()),
-                SwapiUrls.idsOf(film.species()));
+                SwapiUrls.idsOf(film.species()),
+                SwapiUrls.idsOf(film.planets()));
     }
 }

@@ -1,6 +1,7 @@
 package com.conexa.starwars.common.swapi;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Converts SWAPI resource URLs into ids of this API.
@@ -25,7 +26,23 @@ public final class SwapiUrls {
             return List.of();
         }
         return urls.stream()
-                .map(url -> url.substring(url.lastIndexOf('/') + 1))
+                .map(SwapiUrls::idOf)
+                .filter(Objects::nonNull)
                 .toList();
+    }
+
+    /**
+     * Extracts the id from a single SWAPI resource URL.
+     *
+     * @param url SWAPI resource URL; {@code null} when SWAPI omits the relation
+     * @return the id, or {@code null} if {@code url} is {@code null} or points to no resource
+     */
+    public static String idOf(String url) {
+        if (url == null) {
+            return null;
+        }
+        String id = url.substring(url.lastIndexOf('/') + 1);
+        // SWAPI points relations without a target to ".../null" (e.g. the droids' homeworld), see ADR 0024
+        return id.isEmpty() || "null".equals(id) ? null : id;
     }
 }

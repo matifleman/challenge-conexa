@@ -26,6 +26,7 @@ public class SpeciesMapper {
                 species.eyeColors(),
                 species.averageLifespan(),
                 species.language(),
-                SwapiUrls.idsOf(species.people()));
+                SwapiUrls.idsOf(species.people()),
+                SwapiUrls.idOf(species.homeworld()));
     }
 }

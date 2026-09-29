@@ -21,4 +21,6 @@ public class CacheConfig {
     public static final String VEHICLES_BY_ID = "vehicles-by-id";
     public static final String SPECIES_LIST = "species-list";
     public static final String SPECIES_BY_ID = "species-by-id";
+    public static final String PLANETS_LIST = "planets-list";
+    public static final String PLANETS_BY_ID = "planets-by-id";
 }
