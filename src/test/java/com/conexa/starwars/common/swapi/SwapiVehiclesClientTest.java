@@ -1,5 +1,7 @@
 package com.conexa.starwars.common.swapi;
 
+import java.util.List;
+
 import com.conexa.starwars.common.swapi.dto.SwapiItemResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiListResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiPageResponse;
@@ -80,7 +82,9 @@ class SwapiVehiclesClientTest {
                 "30",
                 "50000",
                 "2 months",
-                "30"));
+                "30",
+                List.of(),
+                List.of("https://www.swapi.tech/api/films/1", "https://www.swapi.tech/api/films/5")));
         server.verify();
     }
 

@@ -1,5 +1,6 @@
 package com.conexa.starwars.vehicles.mapper;
 
+import com.conexa.starwars.common.swapi.SwapiUrls;
 import com.conexa.starwars.common.swapi.dto.SwapiResource;
 import com.conexa.starwars.common.swapi.dto.SwapiVehicle;
 import com.conexa.starwars.vehicles.dto.VehicleDto;
@@ -26,6 +27,8 @@ public class VehicleMapper {
                 vehicle.passengers(),
                 vehicle.cargoCapacity(),
                 vehicle.consumables(),
-                vehicle.maxAtmospheringSpeed());
+                vehicle.maxAtmospheringSpeed(),
+                SwapiUrls.idsOf(vehicle.pilots()),
+                SwapiUrls.idsOf(vehicle.films()));
     }
 }

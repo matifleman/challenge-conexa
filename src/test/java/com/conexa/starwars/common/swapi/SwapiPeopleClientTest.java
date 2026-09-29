@@ -1,5 +1,7 @@
 package com.conexa.starwars.common.swapi;
 
+import java.util.List;
+
 import com.conexa.starwars.common.swapi.dto.SwapiItemResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiListResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiPageResponse;
@@ -70,7 +72,11 @@ class SwapiPeopleClientTest {
 
         assertThat(response.result().uid()).isEqualTo("1");
         assertThat(response.result().properties()).isEqualTo(new SwapiPerson(
-                "Luke Skywalker", "172", "77", "blond", "fair", "blue", "19BBY", "male"));
+                "Luke Skywalker", "172", "77", "blond", "fair", "blue", "19BBY", "male",
+                List.of("https://www.swapi.tech/api/films/1", "https://www.swapi.tech/api/films/2",
+                        "https://www.swapi.tech/api/films/3", "https://www.swapi.tech/api/films/6"),
+                List.of("https://www.swapi.tech/api/starships/12", "https://www.swapi.tech/api/starships/22"),
+                List.of("https://www.swapi.tech/api/vehicles/14", "https://www.swapi.tech/api/vehicles/30")));
         server.verify();
     }
 

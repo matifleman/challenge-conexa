@@ -1,5 +1,6 @@
 package com.conexa.starwars.starships.mapper;
 
+import com.conexa.starwars.common.swapi.SwapiUrls;
 import com.conexa.starwars.common.swapi.dto.SwapiResource;
 import com.conexa.starwars.common.swapi.dto.SwapiStarship;
 import com.conexa.starwars.starships.dto.StarshipDto;
@@ -28,6 +29,8 @@ public class StarshipMapper {
                 starship.consumables(),
                 starship.maxAtmospheringSpeed(),
                 starship.hyperdriveRating(),
-                starship.mglt());
+                starship.mglt(),
+                SwapiUrls.idsOf(starship.pilots()),
+                SwapiUrls.idsOf(starship.films()));
     }
 }

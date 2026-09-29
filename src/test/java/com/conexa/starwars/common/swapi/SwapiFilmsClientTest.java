@@ -76,6 +76,9 @@ class SwapiFilmsClientTest {
         assertThat(film.producer()).isEqualTo("Gary Kurtz, Rick McCallum");
         assertThat(film.releaseDate()).isEqualTo(LocalDate.of(1977, 5, 25));
         assertThat(film.openingCrawl()).startsWith("It is a period of civil war.");
+        assertThat(film.characters()).hasSize(18).startsWith("https://www.swapi.tech/api/people/1");
+        assertThat(film.starships()).hasSize(8).startsWith("https://www.swapi.tech/api/starships/2");
+        assertThat(film.vehicles()).hasSize(4).startsWith("https://www.swapi.tech/api/vehicles/4");
         server.verify();
     }
 

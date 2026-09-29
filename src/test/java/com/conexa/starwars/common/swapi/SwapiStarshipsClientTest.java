@@ -1,5 +1,7 @@
 package com.conexa.starwars.common.swapi;
 
+import java.util.List;
+
 import com.conexa.starwars.common.swapi.dto.SwapiItemResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiListResponse;
 import com.conexa.starwars.common.swapi.dto.SwapiPageResponse;
@@ -82,7 +84,9 @@ class SwapiStarshipsClientTest {
                 "3 years",
                 "n/a",
                 "4.0",
-                "10"));
+                "10",
+                List.of(),
+                List.of("https://www.swapi.tech/api/films/1")));
         server.verify();
     }
 
