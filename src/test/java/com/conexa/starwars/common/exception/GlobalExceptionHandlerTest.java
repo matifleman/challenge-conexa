@@ -16,6 +16,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -24,6 +25,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,6 +76,42 @@ class GlobalExceptionHandlerTest {
     void swapiServerErrorReturnsBadGateway() throws Exception {
         when(peopleService.findById(1)).thenThrow(HttpServerErrorException.create(
                 HttpStatus.SERVICE_UNAVAILABLE, "Service Unavailable", HttpHeaders.EMPTY, null, null));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isBadGateway())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail").value("The Star Wars API responded with an error"));
+    }
+
+    @Test
+    void swapiRateLimitReturnsServiceUnavailableWithRetryAfter() throws Exception {
+        HttpHeaders swapiHeaders = new HttpHeaders();
+        swapiHeaders.set(HttpHeaders.RETRY_AFTER, "120");
+        when(peopleService.findById(1)).thenThrow(HttpClientErrorException.create(
+                HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", swapiHeaders, null, null));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(header().string(HttpHeaders.RETRY_AFTER, "120"))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.detail")
+                        .value("The Star Wars API is temporarily limiting requests. Try again later."));
+    }
+
+    @Test
+    void swapiRateLimitWithoutRetryAfterOmitsTheHeader() throws Exception {
+        when(peopleService.findById(1)).thenThrow(HttpClientErrorException.create(
+                HttpStatus.TOO_MANY_REQUESTS, "Too Many Requests", HttpHeaders.EMPTY, null, null));
+
+        mockMvc.perform(get("/api/v1/people/1"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(header().doesNotExist(HttpHeaders.RETRY_AFTER));
+    }
+
+    @Test
+    void swapiClientErrorReturnsBadGateway() throws Exception {
+        when(peopleService.findById(1)).thenThrow(HttpClientErrorException.create(
+                HttpStatus.BAD_REQUEST, "Bad Request", HttpHeaders.EMPTY, null, null));
 
         mockMvc.perform(get("/api/v1/people/1"))
                 .andExpect(status().isBadGateway())

@@ -71,7 +71,7 @@ public class OpenApiConfig {
                 }
                 if (!path.startsWith(AUTH_PATH)) {
                     responses.addApiResponse("502", problem("The Star Wars API responded with an error"));
-                    responses.addApiResponse("503", problem("The Star Wars API could not be reached"));
+                    responses.addApiResponse("503", problem("The Star Wars API could not be reached or is limiting requests"));
                     responses.addApiResponse("504", problem("The Star Wars API did not respond in time"));
                 }
             }));

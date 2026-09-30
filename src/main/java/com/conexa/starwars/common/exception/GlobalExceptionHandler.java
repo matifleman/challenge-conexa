@@ -16,7 +16,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
@@ -76,8 +77,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         "Too many failed login attempts. Try again later."));
     }
 
-    @ExceptionHandler(HttpServerErrorException.class)
-    ProblemDetail handleUpstreamError(HttpServerErrorException ex) {
+    /**
+     * SWAPI limits requests per IP, and every user of this API shares the server's IP: reaching that limit is not
+     * the client's fault, so it is reported as a temporary unavailability (503) instead of a 429. SWAPI's
+     * {@code Retry-After} is forwarded when present.
+     */
+    @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
+    ResponseEntity<ProblemDetail> handleUpstreamRateLimit(HttpClientErrorException.TooManyRequests ex) {
+        log.warn("Star Wars API rate limit reached");
+        ResponseEntity.BodyBuilder response = ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE);
+        HttpHeaders upstreamHeaders = ex.getResponseHeaders();
+        String retryAfter = upstreamHeaders == null ? null : upstreamHeaders.getFirst(HttpHeaders.RETRY_AFTER);
+        if (retryAfter != null) {
+            response.header(HttpHeaders.RETRY_AFTER, retryAfter);
+        }
+        return response.body(ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE,
+                "The Star Wars API is temporarily limiting requests. Try again later."));
+    }
+
+    /**
+     * Any other HTTP error from SWAPI, including a 4xx: it means SWAPI rejected a request built by this API,
+     * not that the client did something wrong. Services translate the 404s that mean "not found" before this point.
+     */
+    @ExceptionHandler(HttpStatusCodeException.class)
+    ProblemDetail handleUpstreamError(HttpStatusCodeException ex) {
         log.warn("Star Wars API responded with an error: {}", ex.getStatusCode());
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY,
                 "The Star Wars API responded with an error");

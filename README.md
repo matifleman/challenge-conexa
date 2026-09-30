@@ -467,8 +467,8 @@ Todos los errores se responden con el formato estándar [`ProblemDetail`](https:
 | `409` | El username ya está registrado |
 | `429` | Demasiados logins fallidos para el username; reintentar después de `Retry-After` segundos |
 | `500` | Error inesperado de la aplicación |
-| `502` | SWAPI respondió con un error |
-| `503` | No se pudo conectar con SWAPI |
+| `502` | SWAPI respondió con un error o rechazó el pedido |
+| `503` | No se pudo conectar con SWAPI, o SWAPI está limitando los pedidos (incluye `Retry-After` si SWAPI lo informa) |
 | `504` | SWAPI no respondió a tiempo (ver timeouts en [Configuración](#configuración)) |
 
 Los errores de validación incluyen la lista de parámetros (o campos del body) inválidos en `errors`:
