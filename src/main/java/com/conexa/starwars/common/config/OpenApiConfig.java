@@ -54,8 +54,8 @@ public class OpenApiConfig {
 
     /**
      * Documents the errors shared by many endpoints, so they are not repeated on every operation: an unexpected
-     * failure (500) everywhere, a missing or invalid token (401) on protected endpoints, and failures of the
-     * upstream Star Wars API (502, 503, 504) on the endpoints backed by it.
+     * failure (500) everywhere, a missing or invalid token (401) on protected endpoints, and the per-user request
+     * limit (429) and failures of the upstream Star Wars API (502, 503, 504) on the endpoints backed by it.
      */
     @Bean
     OpenApiCustomizer commonErrorResponses() {
@@ -70,8 +70,11 @@ public class OpenApiConfig {
                     responses.addApiResponse("401", problem("Missing, invalid or expired access token"));
                 }
                 if (!path.startsWith(AUTH_PATH)) {
+                    responses.addApiResponse("429",
+                            problem("Too many requests from this user; retry after Retry-After seconds"));
                     responses.addApiResponse("502", problem("The Star Wars API responded with an error"));
-                    responses.addApiResponse("503", problem("The Star Wars API could not be reached"));
+                    responses.addApiResponse("503",
+                            problem("The Star Wars API could not be reached or is limiting requests"));
                     responses.addApiResponse("504", problem("The Star Wars API did not respond in time"));
                 }
             }));

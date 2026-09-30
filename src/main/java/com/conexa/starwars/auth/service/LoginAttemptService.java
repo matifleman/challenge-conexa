@@ -3,7 +3,7 @@ package com.conexa.starwars.auth.service;
 import java.util.Locale;
 
 import com.conexa.starwars.auth.config.LoginAttemptProperties;
-import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
+import com.conexa.starwars.common.exception.TooManyRequestsException;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
@@ -40,12 +40,13 @@ public class LoginAttemptService {
     }
 
     /**
-     * @throws TooManyLoginAttemptsException if the username reached the failure limit and is still blocked
+     * @throws TooManyRequestsException if the username reached the failure limit and is still blocked
      */
     public void checkNotBlocked(String username) {
         Integer count = failures.getIfPresent(key(username));
         if (count != null && count >= properties.maxFailures()) {
-            throw new TooManyLoginAttemptsException(properties.blockDuration());
+            throw new TooManyRequestsException(
+                    "Too many failed login attempts. Try again later.", properties.blockDuration());
         }
     }
 

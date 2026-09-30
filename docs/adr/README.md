@@ -30,6 +30,7 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0022](0022-relaciones-como-ids-propios.md) | Relaciones como ids propios | Aceptada |
 | [0023](0023-recurso-species.md) | Recurso Species | Aceptada |
 | [0024](0024-recurso-planets.md) | Recurso Planets | Aceptada |
+| [0025](0025-limite-de-requests-por-usuario.md) | Límite de requests por usuario | Aceptada |
 
 ## Mejoras futuras
 
@@ -41,3 +42,4 @@ Mejoras identificadas durante el desarrollo y documentadas en los ADR correspond
 - **Claves RSA por configuración** (ADR 0017): para que los tokens sobrevivan a los reinicios y funcionen con varias instancias.
 - **Refresh tokens** (ADR 0017): sesiones largas manteniendo access tokens de corta duración.
 - **Límite de intentos compartido** (ADR 0021): mover los contadores a Redis si la API pasa a correr en varias instancias.
+- **Límite global hacia SWAPI** (ADR 0025): acotar el total de llamadas a SWAPI, además del límite por usuario, si la cantidad de usuarios crece.

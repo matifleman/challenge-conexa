@@ -2,6 +2,7 @@ package com.conexa.starwars.common.exception;
 
 import java.net.SocketTimeoutException;
 import java.net.http.HttpTimeoutException;
+import java.time.Duration;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,7 +17,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
@@ -68,16 +70,37 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Tells the client when it may try again, in seconds, through the standard {@code Retry-After} header.
      */
-    @ExceptionHandler(TooManyLoginAttemptsException.class)
-    ResponseEntity<ProblemDetail> handleTooManyLoginAttempts(TooManyLoginAttemptsException ex) {
+    @ExceptionHandler(TooManyRequestsException.class)
+    ResponseEntity<ProblemDetail> handleTooManyRequests(TooManyRequestsException ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .header(HttpHeaders.RETRY_AFTER, String.valueOf(ex.getRetryAfter().toSeconds()))
-                .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
-                        "Too many failed login attempts. Try again later."));
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(secondsRoundedUp(ex.getRetryAfter())))
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage()));
     }
 
-    @ExceptionHandler(HttpServerErrorException.class)
-    ProblemDetail handleUpstreamError(HttpServerErrorException ex) {
+    /**
+     * SWAPI limits requests per IP, and every user of this API shares the server's IP: reaching that limit is not
+     * the client's fault, so it is reported as a temporary unavailability (503) instead of a 429. SWAPI's
+     * {@code Retry-After} is forwarded when present.
+     */
+    @ExceptionHandler(HttpClientErrorException.TooManyRequests.class)
+    ResponseEntity<ProblemDetail> handleUpstreamRateLimit(HttpClientErrorException.TooManyRequests ex) {
+        log.warn("Star Wars API rate limit reached");
+        ResponseEntity.BodyBuilder response = ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE);
+        HttpHeaders upstreamHeaders = ex.getResponseHeaders();
+        String retryAfter = upstreamHeaders == null ? null : upstreamHeaders.getFirst(HttpHeaders.RETRY_AFTER);
+        if (retryAfter != null) {
+            response.header(HttpHeaders.RETRY_AFTER, retryAfter);
+        }
+        return response.body(ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE,
+                "The Star Wars API is temporarily limiting requests. Try again later."));
+    }
+
+    /**
+     * Any other HTTP error from SWAPI, including a 4xx: it means SWAPI rejected a request built by this API,
+     * not that the client did something wrong. Services translate the 404s that mean "not found" before this point.
+     */
+    @ExceptionHandler(HttpStatusCodeException.class)
+    ProblemDetail handleUpstreamError(HttpStatusCodeException ex) {
         log.warn("Star Wars API responded with an error: {}", ex.getStatusCode());
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY,
                 "The Star Wars API responded with an error");
@@ -150,6 +173,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             }
         }
         return false;
+    }
+
+    // Rounded up so the client never retries a moment before the limit lifts
+    private static long secondsRoundedUp(Duration duration) {
+        return duration.toNanosPart() == 0 ? duration.toSeconds() : duration.toSeconds() + 1;
     }
 
     private record ParameterError(String parameter, String message) {

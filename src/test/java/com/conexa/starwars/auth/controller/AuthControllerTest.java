@@ -7,7 +7,7 @@ import com.conexa.starwars.auth.config.SecurityConfig;
 import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.auth.service.AuthService;
 import com.conexa.starwars.common.exception.ResourceAlreadyExistsException;
-import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
+import com.conexa.starwars.common.exception.TooManyRequestsException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -130,8 +130,8 @@ class AuthControllerTest {
 
     @Test
     void loginRejectsBlockedUsernameWithRetryAfter() throws Exception {
-        when(authService.login("luke", "password123"))
-                .thenThrow(new TooManyLoginAttemptsException(Duration.ofMinutes(15)));
+        when(authService.login("luke", "password123")).thenThrow(new TooManyRequestsException(
+                "Too many failed login attempts. Try again later.", Duration.ofMinutes(15)));
 
         mockMvc.perform(post("/api/v1/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

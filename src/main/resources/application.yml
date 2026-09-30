@@ -40,6 +40,11 @@ auth:
     max-failures: 5
     block-duration: 15m
 
+rate-limit:
+  # Per-user cap on the SWAPI-backed endpoints, so one user cannot exhaust the SWAPI quota all users share
+  max-requests: 30
+  window: 1m
+
 springdoc:
   swagger-ui:
     # Kept public on purpose: the interactive docs are the main way to try the deployed API
