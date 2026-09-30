@@ -2,6 +2,7 @@ package com.conexa.starwars.common.exception;
 
 import java.net.SocketTimeoutException;
 import java.net.http.HttpTimeoutException;
+import java.time.Duration;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -69,12 +70,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Tells the client when it may try again, in seconds, through the standard {@code Retry-After} header.
      */
-    @ExceptionHandler(TooManyLoginAttemptsException.class)
-    ResponseEntity<ProblemDetail> handleTooManyLoginAttempts(TooManyLoginAttemptsException ex) {
+    @ExceptionHandler(TooManyRequestsException.class)
+    ResponseEntity<ProblemDetail> handleTooManyRequests(TooManyRequestsException ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                .header(HttpHeaders.RETRY_AFTER, String.valueOf(ex.getRetryAfter().toSeconds()))
-                .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS,
-                        "Too many failed login attempts. Try again later."));
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(secondsRoundedUp(ex.getRetryAfter())))
+                .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage()));
     }
 
     /**
@@ -173,6 +173,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             }
         }
         return false;
+    }
+
+    // Rounded up so the client never retries a moment before the limit lifts
+    private static long secondsRoundedUp(Duration duration) {
+        return duration.toNanosPart() == 0 ? duration.toSeconds() : duration.toSeconds() + 1;
     }
 
     private record ParameterError(String parameter, String message) {

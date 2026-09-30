@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.conexa.starwars.auth.config.LoginAttemptProperties;
-import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
+import com.conexa.starwars.common.exception.TooManyRequestsException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +31,7 @@ class LoginAttemptServiceTest {
     void blocksUsernameOnceTheLimitIsReached() {
         failTimes("luke", 5);
 
-        assertThatExceptionOfType(TooManyLoginAttemptsException.class)
+        assertThatExceptionOfType(TooManyRequestsException.class)
                 .isThrownBy(() -> service.checkNotBlocked("luke"))
                 .satisfies(ex -> assertThat(ex.getRetryAfter()).isEqualTo(BLOCK_DURATION));
     }
@@ -49,7 +49,7 @@ class LoginAttemptServiceTest {
     void countsUsernamesIgnoringCase() {
         failTimes("LUKE", 5);
 
-        assertThatExceptionOfType(TooManyLoginAttemptsException.class)
+        assertThatExceptionOfType(TooManyRequestsException.class)
                 .isThrownBy(() -> service.checkNotBlocked("luke"));
     }
 
@@ -65,7 +65,7 @@ class LoginAttemptServiceTest {
         failTimes("luke", 5);
 
         now.addAndGet(BLOCK_DURATION.minusSeconds(1).toNanos());
-        assertThatExceptionOfType(TooManyLoginAttemptsException.class)
+        assertThatExceptionOfType(TooManyRequestsException.class)
                 .isThrownBy(() -> service.checkNotBlocked("luke"));
 
         now.addAndGet(Duration.ofSeconds(1).toNanos());

@@ -5,7 +5,7 @@ import java.time.Instant;
 import com.conexa.starwars.auth.config.JwtProperties;
 import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.common.exception.ResourceAlreadyExistsException;
-import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
+import com.conexa.starwars.common.exception.TooManyRequestsException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -66,7 +66,7 @@ public class AuthService {
      * the username is blocked for a while, and its credentials are not checked until the block lifts (ADR 0021).
      *
      * @throws BadCredentialsException       if the username does not exist or the password is wrong
-     * @throws TooManyLoginAttemptsException if the username is temporarily blocked
+     * @throws TooManyRequestsException if the username is temporarily blocked
      */
     public TokenResponse login(String username, String password) {
         loginAttemptService.checkNotBlocked(username);

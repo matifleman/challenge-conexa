@@ -11,7 +11,7 @@ import java.util.List;
 import com.conexa.starwars.auth.config.JwtProperties;
 import com.conexa.starwars.auth.dto.TokenResponse;
 import com.conexa.starwars.common.exception.ResourceAlreadyExistsException;
-import com.conexa.starwars.common.exception.TooManyLoginAttemptsException;
+import com.conexa.starwars.common.exception.TooManyRequestsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -126,11 +126,11 @@ class AuthServiceTest {
 
     @Test
     void loginRejectsBlockedUsernameWithoutCheckingCredentials() {
-        doThrow(new TooManyLoginAttemptsException(Duration.ofMinutes(15)))
+        doThrow(new TooManyRequestsException("Too many failed login attempts", Duration.ofMinutes(15)))
                 .when(loginAttemptService).checkNotBlocked("luke");
 
         assertThatThrownBy(() -> authService.login("luke", "password123"))
-                .isInstanceOf(TooManyLoginAttemptsException.class);
+                .isInstanceOf(TooManyRequestsException.class);
         verify(authenticationManager, never()).authenticate(any());
     }
 
