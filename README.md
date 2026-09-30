@@ -57,6 +57,8 @@ curl http://localhost:8080/actuator/health
 | `jwt.expiration` | Duración de los tokens | `1h` |
 | `auth.login-attempts.max-failures` | Logins fallidos seguidos que bloquean un username | `5` |
 | `auth.login-attempts.block-duration` | Duración del bloqueo, desde el último fallo | `15m` |
+| `rate-limit.max-requests` | Requests por usuario permitidos en cada ventana | `30` |
+| `rate-limit.window` | Duración de la ventana, desde el primer request | `1m` |
 | `server.port` (variable `PORT`) | Puerto HTTP | `8080` |
 
 Cualquier propiedad se puede sobrescribir con una variable de entorno, por ejemplo `SWAPI_BASEURL` o `SPRING_DATASOURCE_URL`. Los valores por defecto de la base coinciden con `compose.yaml` y son solo para desarrollo local.
@@ -465,7 +467,7 @@ Todos los errores se responden con el formato estándar [`ProblemDetail`](https:
 | `404` | El recurso no existe, o la ruta no existe |
 | `405` | Método HTTP no soportado (por ejemplo, `POST` en un listado) |
 | `409` | El username ya está registrado |
-| `429` | Demasiados logins fallidos para el username; reintentar después de `Retry-After` segundos |
+| `429` | Demasiados logins fallidos para el username, o demasiados requests del usuario; reintentar después de `Retry-After` segundos |
 | `500` | Error inesperado de la aplicación |
 | `502` | SWAPI respondió con un error o rechazó el pedido |
 | `503` | No se pudo conectar con SWAPI, o SWAPI está limitando los pedidos (incluye `Retry-After` si SWAPI lo informa) |
@@ -488,6 +490,26 @@ Los errores de validación incluyen la lista de parámetros (o campos del body) 
 
 Las respuestas de error nunca incluyen detalles internos: los errores `5xx` responden con un mensaje genérico y el detalle técnico se registra en el log de la aplicación.
 
+## Integración con SWAPI
+
+Todos los recursos provienen de [SWAPI](https://www.swapi.tech/documentation). Cómo se consume:
+
+- **Límite de SWAPI:** unos 100 pedidos cada 15 minutos por IP, según los headers `x-ratelimit-*` de sus respuestas (su documentación habla de 10.000 por día), con una demora creciente a partir del quinto pedido. Todos los usuarios de la API comparten la IP del servidor y, por lo tanto, esa cuota.
+- **Caché:** las respuestas exitosas se guardan en memoria durante 24 horas, así que un mismo pedido llega a SWAPI una sola vez ([ADR 0020](docs/adr/0020-cache-de-respuestas-de-swapi.md)). Los errores no se cachean.
+- **Límite por usuario:** cada usuario puede hacer 30 requests por minuto a los endpoints de recursos (configurable). Al superarlo, la API responde `429` con `Retry-After`. Cuentan todos los requests, estén o no en caché ([ADR 0025](docs/adr/0025-limite-de-requests-por-usuario.md)).
+- **Timeouts:** 5 segundos para conectar y 10 para recibir la respuesta (ver [Configuración](#configuración)).
+- **Fallas de SWAPI:** se informan como errores de gateway, con un mensaje genérico:
+
+| SWAPI | La API responde |
+|---|---|
+| `404` | `404`: el recurso no existe |
+| `429` (límite alcanzado) | `503`, con `Retry-After` si SWAPI lo informa |
+| Otro `4xx` o un `5xx` | `502` |
+| No responde a tiempo | `504` |
+| No se puede conectar | `503` |
+
+- **Reemplazo:** existen otras instancias públicas de SWAPI (por ejemplo, [swapi.dev](https://swapi.dev) y [swapi.info](https://swapi.info)) con otro formato de respuesta. Cambiar de proveedor implicaría adaptar solo el cliente y los DTOs de SWAPI, porque el contrato público está desacoplado de ellos ([ADR 0002](docs/adr/0002-anti-corruption-layer-swapi.md)).
+
 ## Decisiones de arquitectura
 
 Las decisiones de diseño, con sus alternativas y motivos, están documentadas como ADRs en [`docs/adr`](docs/adr/README.md).
@@ -506,3 +528,4 @@ Las decisiones de diseño, con sus alternativas y motivos, están documentadas c
 | Documentación de la API (Swagger / OpenAPI) | ✅ Listo |
 | Usuarios en PostgreSQL y autenticación con JWT | ✅ Listo |
 | Relaciones entre recursos como ids | ✅ Listo |
+| Límite de requests por usuario | ✅ Listo |
