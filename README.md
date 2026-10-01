@@ -82,7 +82,7 @@ La API está publicada en Render, con la base de datos en Neon (ver [ADR 0019](d
 - **API:** [`https://starwars-api-zdeq.onrender.com`](https://starwars-api-zdeq.onrender.com)
 - **Swagger UI:** [`https://starwars-api-zdeq.onrender.com/swagger-ui.html`](https://starwars-api-zdeq.onrender.com/swagger-ui.html)
 
-> El plan gratuito suspende el servicio tras 15 minutos sin uso: el primer pedido después de una pausa puede tardar alrededor de dos minutos, y los tokens emitidos antes de la pausa dejan de ser válidos (hay que volver a hacer login).
+> El plan gratuito suspende el servicio tras 15 minutos sin uso: el primer pedido después de una pausa puede tardar alrededor de dos minutos, y los tokens emitidos antes de la pausa dejan de ser válidos (hay que volver a hacer login). Un workflow programado ([`keep-alive.yml`](.github/workflows/keep-alive.yml), [ADR 0026](docs/adr/0026-keep-alive-con-github-actions.md)) la mantiene activa de lunes a viernes de 8 a 21 h (Argentina); fuera de ese horario aplica la suspensión.
 
 Cada merge a `main` se deploya automáticamente, una vez que el pipeline de CI (GitHub Actions: `./mvnw verify`) termina en verde. El servicio está definido en [`render.yaml`](render.yaml); las credenciales de la base se configuran como variables de entorno en Render (`SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME` y `SPRING_DATASOURCE_PASSWORD`).
 

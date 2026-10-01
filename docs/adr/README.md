@@ -31,6 +31,7 @@ Se sigue el formato de [Michael Nygard](https://cognitect.com/blog/2011/11/15/do
 | [0023](0023-recurso-species.md) | Recurso Species | Aceptada |
 | [0024](0024-recurso-planets.md) | Recurso Planets | Aceptada |
 | [0025](0025-limite-de-requests-por-usuario.md) | Límite de requests por usuario | Aceptada |
+| [0026](0026-keep-alive-con-github-actions.md) | Keep-alive con GitHub Actions | Aceptada |
 
 ## Mejoras futuras
 
